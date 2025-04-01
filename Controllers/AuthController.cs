@@ -2,6 +2,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using visingsobiodlarna_backend.Models;
 using visingsobiodlarna_backend.DTOs;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace visingsobiodlarna_backend.Controllers;
 
@@ -10,9 +14,12 @@ namespace visingsobiodlarna_backend.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    public AuthController(UserManager<ApplicationUser> userManager)
+    private readonly IConfiguration _config;
+
+    public AuthController(UserManager<ApplicationUser> userManager, IConfiguration config)
     {
         _userManager = userManager;
+        _config = config;
     }
 
     [HttpPost("register")]
@@ -36,5 +43,44 @@ public class AuthController : ControllerBase
 
         return BadRequest(result.Errors);
     }
+
+    [HttpPost("login")]
+public async Task<IActionResult> Login(LoginDto model)
+{
+    var user = await _userManager.FindByEmailAsync(model.Email);
+
+    if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
+    {
+        return Unauthorized("Fel e-postadress eller lösenord.");
+    }
+
+    if (!user.IsApprovedByAdmin)
+    {
+        return Unauthorized("Kontot är ännu inte godkänt av administratör.");
+    }
+
+    var claims = new[]
+    {
+        new Claim(ClaimTypes.Name, user.FullName),
+        new Claim(ClaimTypes.Email, user.Email),
+        new Claim(ClaimTypes.NameIdentifier, user.Id)
+        //Här lägger jag in roller senare
+    };
+
+    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+    var token = new JwtSecurityToken(
+        issuer: _config["Jwt:Issuer"],
+        audience: _config["Jwt:Audience"],
+        claims: claims,
+        expires: DateTime.UtcNow.AddHours(1),
+        signingCredentials: creds
+    );
+
+    var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+    return Ok(new { token = tokenString });
+}
 
 }
