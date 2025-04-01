@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 
+namespace visingsobiodlarna_backend.Models;
+
 public class ApplicationUser : IdentityUser
 {
     public string FirstName {get; set;}//Förnamn på medlem
