@@ -5,6 +5,7 @@ using visingsobiodlarna_backend.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using visingsobiodlarna_backend.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,3 +56,9 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await RoleInitializer.SeedRolesAsync(services);
+}
