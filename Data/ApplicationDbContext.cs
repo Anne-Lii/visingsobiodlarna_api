@@ -12,6 +12,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     }
 
     //Db set
-    public DbSet<Apiary> Apiaries { get; set; } //Bigårdar
-    public DbSet<Hive> Hives { get; set; }//Kupor
+    public DbSet<ApiaryModel> Apiaries { get; set; } //Bigårdar
+    public DbSet<HiveModel> Hives { get; set; }//Kupor
 }

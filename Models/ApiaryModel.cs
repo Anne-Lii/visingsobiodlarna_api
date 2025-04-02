@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace visingsobiodlarna_backend.Models;
-public class Apiary
+public class ApiaryModel
 {
     public int Id { get; set; }
 
@@ -18,7 +18,7 @@ public class Apiary
     [ForeignKey("UserId")]
     public ApplicationUser? User { get; set; }
 
-    public ICollection<Hive> Hives { get; set; } = new List<Hive>();
+    public ICollection<HiveModel> Hives { get; set; } = new List<HiveModel>();
 
    
 }
