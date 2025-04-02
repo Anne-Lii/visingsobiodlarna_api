@@ -6,6 +6,7 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using System.ComponentModel.DataAnnotations;
 
 namespace visingsobiodlarna_backend.Controllers;
 
@@ -25,6 +26,28 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterDto model)
     {
+         //validering 
+        if (string.IsNullOrWhiteSpace(model.Email))
+        {
+            return BadRequest("E-postadress är obligatorisk.");
+        }
+
+        if (!new EmailAddressAttribute().IsValid(model.Email))
+        {
+            return BadRequest("Ogiltig e-postadress.");
+        }
+
+        if (string.IsNullOrWhiteSpace(model.Password))
+        {
+            return BadRequest("Lösenord är obligatoriskt.");
+        }
+
+        if (string.IsNullOrWhiteSpace(model.FirstName) || string.IsNullOrWhiteSpace(model.LastName))
+        {
+            return BadRequest("Förnamn och efternamn är obligatoriska.");
+        }
+
+        //skapar användaren
         var user = new ApplicationUser
         {
             UserName = model.Email,
@@ -35,6 +58,7 @@ public class AuthController : ControllerBase
         };
 
         var result = await _userManager.CreateAsync(user, model.Password);
+
 
         if (result.Succeeded)
         {
