@@ -38,6 +38,7 @@ public class AuthController : ControllerBase
 
         if (result.Succeeded)
         {
+            await _userManager.AddToRoleAsync(user, "member");
             return Ok("Användaren registrerad. Väntar på godkännande. (kan ta upp till 24 timmar)");
         }
 
