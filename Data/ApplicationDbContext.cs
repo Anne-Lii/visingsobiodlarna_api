@@ -10,4 +10,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
 
     }
+
+    //Db set
+    public DbSet<Apiary> Apiaries { get; set; } //Bigårdar
 }
