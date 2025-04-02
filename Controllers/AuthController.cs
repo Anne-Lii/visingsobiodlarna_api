@@ -46,42 +46,42 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-public async Task<IActionResult> Login(LoginDto model)
-{
-    var user = await _userManager.FindByEmailAsync(model.Email);
-
-    if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
+    public async Task<IActionResult> Login(LoginDto model)
     {
-        return Unauthorized("Fel e-postadress eller lösenord.");
+        var user = await _userManager.FindByEmailAsync(model.Email);
+
+        if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
+        {
+            return Unauthorized("Fel e-postadress eller lösenord.");
+        }
+
+        if (!user.IsApprovedByAdmin)
+        {
+            return Unauthorized("Kontot är ännu inte godkänt av administratör.");
+        }
+
+        var claims = new[]
+        {
+            new Claim(ClaimTypes.Name, user.FullName),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.NameIdentifier, user.Id)
+            //Här lägger jag in roller senare
+        };
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: _config["Jwt:Issuer"],
+            audience: _config["Jwt:Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(1),
+            signingCredentials: creds
+        );
+
+        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+        return Ok(new { token = tokenString });
     }
-
-    if (!user.IsApprovedByAdmin)
-    {
-        return Unauthorized("Kontot är ännu inte godkänt av administratör.");
-    }
-
-    var claims = new[]
-    {
-        new Claim(ClaimTypes.Name, user.FullName),
-        new Claim(ClaimTypes.Email, user.Email),
-        new Claim(ClaimTypes.NameIdentifier, user.Id)
-        //Här lägger jag in roller senare
-    };
-
-    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-    var token = new JwtSecurityToken(
-        issuer: _config["Jwt:Issuer"],
-        audience: _config["Jwt:Audience"],
-        claims: claims,
-        expires: DateTime.UtcNow.AddHours(1),
-        signingCredentials: creds
-    );
-
-    var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
-    return Ok(new { token = tokenString });
-}
 
 }
