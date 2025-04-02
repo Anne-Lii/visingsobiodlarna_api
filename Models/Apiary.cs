@@ -18,5 +18,7 @@ public class Apiary
     [ForeignKey("UserId")]
     public ApplicationUser? User { get; set; }
 
+    public ICollection<Hive> Hives { get; set; } = new List<Hive>();
+
    
 }
