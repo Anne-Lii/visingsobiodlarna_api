@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using visingsobiodlarna_backend.Data;
 using visingsobiodlarna_backend.Models;
 
 namespace visingsobiodlarna_backend.Controllers;
@@ -11,10 +13,13 @@ namespace visingsobiodlarna_backend.Controllers;
 public class AdminController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ApplicationDbContext _context;
 
-    public AdminController(UserManager<ApplicationUser> userManager)
+    //konstruktor
+    public AdminController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
     {
         _userManager = userManager;
+        _context = context;
     }
 
     //Hämta alla användare
@@ -81,5 +86,37 @@ public class AdminController : ControllerBase
 
         var result = await _userManager.DeleteAsync(user);
         return result.Succeeded ? Ok("Användaren har tagits bort.") : BadRequest("Kunde inte ta bort användaren.");
+    }
+
+    [HttpGet("missing-wintering/{season}")]
+    public async Task<IActionResult> GetUsersMissingWintering(string season)
+    {
+        //Hämtar alla godkända användare
+        var allUsers = await _userManager.Users
+            .Where(u => u.IsApprovedByAdmin)
+            .ToListAsync();
+
+        //Hämtar alla UserId som HAR rapporterat invintring för vald vinter
+        var reportedUserIds = await _context.Winterings
+            .Where(w => w.Season == season)
+            .Select(w => w.UserId)
+            .Distinct()
+            .ToListAsync();
+
+        //Filtrerar fram användare som saknar rapport med fullständigt namn och epostadress.
+        var usersMissingReport = allUsers
+            .Where(u => !reportedUserIds.Contains(u.Id))
+            .Select(u => new {
+                u.FullName,
+                u.Email
+            })
+            .ToList();
+
+        if (usersMissingReport.Count == 0)
+        {
+            return Ok("Alla användare har rapporterat invintrade kupor för " + season + ".");
+        }
+
+        return Ok(usersMissingReport);
     }
 }
