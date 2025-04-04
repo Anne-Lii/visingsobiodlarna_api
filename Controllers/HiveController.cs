@@ -33,6 +33,7 @@ public class HiveController : ControllerBase
 
     //Hämtar alla kupor (GET /api/hive)
     [HttpGet]
+    [Authorize(Roles = "admin")]//Bara admin kommer åt denna
     public async Task<IActionResult> GetAllHives()
     {
         var hives = await _context.Hives

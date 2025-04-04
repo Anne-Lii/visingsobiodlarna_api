@@ -70,7 +70,7 @@ public class ApiaryController : ControllerBase
         return Ok(apiary);
     }
 
-    //Radera en bigård DELETE (DELETE /api/apiary/{id})
+    //Radera en bigård (DELETE /api/apiary/{id})
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteApiary(int id)
     {
