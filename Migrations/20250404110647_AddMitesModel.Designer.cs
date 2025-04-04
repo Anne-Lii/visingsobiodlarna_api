@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using visingsobiodlarna_backend.Data;
 
@@ -11,9 +12,11 @@ using visingsobiodlarna_backend.Data;
 namespace visingsobiodlarna_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250404110647_AddMitesModel")]
+    partial class AddMitesModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -277,33 +280,6 @@ namespace visingsobiodlarna_backend.Migrations
                     b.ToTable("Hives");
                 });
 
-            modelBuilder.Entity("visingsobiodlarna_backend.Models.MitesModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("HiveId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MiteCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Week")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("HiveId");
-
-                    b.ToTable("Mites");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -375,17 +351,6 @@ namespace visingsobiodlarna_backend.Migrations
                         .IsRequired();
 
                     b.Navigation("Apiary");
-                });
-
-            modelBuilder.Entity("visingsobiodlarna_backend.Models.MitesModel", b =>
-                {
-                    b.HasOne("visingsobiodlarna_backend.Models.HiveModel", "Hive")
-                        .WithMany()
-                        .HasForeignKey("HiveId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Hive");
                 });
 
             modelBuilder.Entity("visingsobiodlarna_backend.Models.ApiaryModel", b =>
