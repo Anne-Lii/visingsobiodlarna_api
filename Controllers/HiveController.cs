@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using visingsobiodlarna_backend.Data;
+using visingsobiodlarna_backend.DTOs;
 using visingsobiodlarna_backend.Models;
 
 namespace visingsobiodlarna_backend.Controllers;
@@ -58,13 +59,19 @@ public class HiveController : ControllerBase
     [HttpGet("by-user/{userId}")]
     public async Task<IActionResult> GetHivesByUser(string userId)
     {
-        var hives = await _context.Hives
-            .Include(h => h.Apiary)
-            .Where(h => h.Apiary != null && h.Apiary.UserId == userId)
-            .ToListAsync();
+    var hives = await _context.Hives
+        .Include(h => h.Apiary)
+        .Where(h => h.Apiary != null && h.Apiary.UserId == userId)
+        .Select(h => new HiveDto
+        {
+            Id = h.Id,
+            Name = h.Name,
+            ApiaryId = h.ApiaryId
+        })
+        .ToListAsync();
 
-        return Ok(hives);
-    }
+    return Ok(hives);
+}
 
     //Uppdatera en kupa (PUT /api/hive/{id})
     [HttpPut("{id}")]
