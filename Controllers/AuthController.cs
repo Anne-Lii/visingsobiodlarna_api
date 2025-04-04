@@ -84,13 +84,17 @@ public class AuthController : ControllerBase
             return Unauthorized("Kontot är ännu inte godkänt av administratör.");
         }
 
-        var claims = new[]
+        var userRoles = await _userManager.GetRolesAsync(user);
+
+        var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, user.FullName),
-            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Name, user.FullName ?? ""),
+            new Claim(ClaimTypes.Email, user.Email ?? ""),
             new Claim(ClaimTypes.NameIdentifier, user.Id)
-            //Här lägger jag in roller senare
         };
+
+        // Lägger till varje roll som en egen claim
+        claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
