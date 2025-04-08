@@ -25,6 +25,14 @@ public class WinteringController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
+            //Sätter UserId från inloggad användare
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            
+            if (userId == null)
+                return Unauthorized();
+
+            model.UserId = userId;
+
         _context.Winterings.Add(model);
         await _context.SaveChangesAsync();
 
