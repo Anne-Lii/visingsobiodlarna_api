@@ -6,10 +6,10 @@ public class ApiaryModel
 {
     public int Id { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Namn på bigården är obligatoriskt")]
     public string? Name { get; set; }
-    
-    [Required]
+
+    [Required(ErrorMessage = "Vart är bigården placerad? Ex hemma, nere vid ån, bakom ladan")]
     public string? Location { get; set; }
 
     //Foreign key till användaren
