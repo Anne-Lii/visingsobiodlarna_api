@@ -27,6 +27,13 @@ public class HoneyHarvestController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
+        //Sätter UserId från inloggad användare
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+            return Unauthorized();
+
+        model.UserId = userId;
+
         _context.HoneyHarvests.Add(model);
         await _context.SaveChangesAsync();
 

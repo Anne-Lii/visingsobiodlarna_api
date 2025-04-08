@@ -8,7 +8,8 @@ public class ApiaryModel
 
     [Required]
     public string? Name { get; set; }
-
+    
+    [Required]
     public string? Location { get; set; }
 
     //Foreign key till användaren
