@@ -8,12 +8,12 @@ namespace visingsobiodlarna_backend.Models
         public int Id { get; set; }
 
         [Required]
-        public string UserId { get; set; } = string.Empty; //Vilken användare som rapporterar
+        public string? UserId { get; set; } //Vilken användare som rapporterar
 
-        [Required]
-        public string Season { get; set; } = string.Empty; //vilken vinter ex "2024/2025"
+        [Required(ErrorMessage = "Vinter är obligatoriskt ex: vinter 2023/2024")]
+        public string? Season { get; set; } //vilken vinter ex "2024/2025"
 
-        [Required]
+        [Required(ErrorMessage = "Antal invintrade kupor är obligatoriskt")]
         public int HiveCount { get; set; } //Antal invintrade kupor
     }
 }
