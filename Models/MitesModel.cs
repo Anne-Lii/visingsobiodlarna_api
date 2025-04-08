@@ -13,12 +13,12 @@ public class MitesModel
         [ForeignKey("HiveId")]
         public HiveModel? Hive { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "År är obligatoriskt")]
         public int Year { get; set; }//året
 
-        [Required]
+        [Required(ErrorMessage = "Vecka är obligatoriskt")]
         public int Week { get; set; }//vecka som rapporteras
 
-        [Required]
+        [Required(ErrorMessage = "Antal kvalster är obligatoriskt")]
         public int MiteCount { get; set; } //Antal kvalster
     }
