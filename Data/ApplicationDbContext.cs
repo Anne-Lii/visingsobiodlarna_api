@@ -17,4 +17,5 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<MitesModel> Mites { get; set; }//Varrova kvalster
     public DbSet<WinteringModel> Winterings { get; set; }//invintrade kupor
     public DbSet<HoneyHarvestModel> HoneyHarvests {get; set;}//Honungsskörd
+    public DbSet<CalenderModel> CalenderModels { get; set; }//Kalenderhändelser
 }
