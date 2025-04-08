@@ -6,7 +6,7 @@ public class HiveModel
 {
      public int Id { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Namn är obligatoriskt")]
     public string Name { get; set; } = string.Empty;
 
     [Required]
