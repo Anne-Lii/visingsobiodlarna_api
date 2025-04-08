@@ -6,7 +6,7 @@ using visingsobiodlarna_backend.Models;
 
 namespace visingsobiodlarna_backend.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/calendar")]
     [ApiController]
     public class CalendarController : ControllerBase
     {
