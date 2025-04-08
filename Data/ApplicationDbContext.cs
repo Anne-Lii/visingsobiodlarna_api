@@ -18,4 +18,5 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<WinteringModel> Winterings { get; set; }//invintrade kupor
     public DbSet<HoneyHarvestModel> HoneyHarvests {get; set;}//Honungsskörd
     public DbSet<CalenderModel> CalenderModels { get; set; }//Kalenderhändelser
+    public DbSet<NewsModel> NewsModels { get; set; }//Nyheter
 }
