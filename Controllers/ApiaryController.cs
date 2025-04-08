@@ -21,15 +21,23 @@ public class ApiaryController : ControllerBase
     //Skapa en ny bigård (POST /api/apiary)
     [HttpPost]
     public async Task<IActionResult> CreateApiary(ApiaryModel model)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+{
+    if (!ModelState.IsValid)
+        return BadRequest(ModelState);
 
-        _context.Apiaries.Add(model);
-        await _context.SaveChangesAsync();
+        //Hämtar UserId från token och sätt den automatiskt
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        
+    if (userId == null)
+        return Unauthorized();
 
-        return Ok(model);
-    }
+    model.UserId = userId;
+
+    _context.Apiaries.Add(model);
+    await _context.SaveChangesAsync();
+
+    return Ok(model);
+}
 
     //Hämtar alla bigårdar (GET /api/apiary)
     [HttpGet]
