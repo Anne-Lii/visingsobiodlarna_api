@@ -38,7 +38,7 @@ namespace visingsobiodlarna_backend.Controllers
 
         //Skapar en ny händelse
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<CalenderModel>> CreateCalendarEvent(CalenderModel calendarEvent)
         {
             _context.CalenderModels.Add(calendarEvent);
@@ -49,7 +49,7 @@ namespace visingsobiodlarna_backend.Controllers
 
         //Uppdatera en händelse
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> UpdateCalendarEvent(int id, CalenderModel calendarEvent)
         {
             if (id != calendarEvent.Id)
@@ -74,7 +74,7 @@ namespace visingsobiodlarna_backend.Controllers
 
         //Radera en händelse
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteCalendarEvent(int id)
         {
             var calendarEvent = await _context.CalenderModels.FindAsync(id);
