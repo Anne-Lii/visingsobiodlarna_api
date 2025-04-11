@@ -93,7 +93,7 @@ public class AuthController : ControllerBase
             new Claim(ClaimTypes.NameIdentifier, user.Id)
         };
 
-        // Lägger till varje roll som en egen claim i token
+        // Lägger till varje roll som en egen claimi token
         claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
