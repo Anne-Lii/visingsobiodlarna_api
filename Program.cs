@@ -14,10 +14,20 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
 });
-builder.Services.AddOpenApi();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+    }
+
+    options.UseSqlServer(connectionString);
+});
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -54,7 +64,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
@@ -62,11 +73,14 @@ app.UseAuthentication();////kollar om användaren är inloggad och har JWT
 app.UseAuthorization();//kollar om användaren har rätt roll/rättigheter
 app.MapControllers();
 
-
-using (var scope = app.Services.CreateScope())
+async Task SeedRolesAsync()
 {
+    using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
     await RoleInitializer.SeedRolesAsync(services);
 }
+
+// Anropa metoden innan app.Run()
+await SeedRolesAsync();
 
 app.Run();
