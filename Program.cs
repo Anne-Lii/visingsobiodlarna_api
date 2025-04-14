@@ -42,7 +42,7 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,//Kontroll att token är korrekt validerad
 
         //hämtar inställningar från appsettings.json
-        ValidIssuer = builder.Configuration["v"],
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),//Hemlig nyckel som används för att validera token
         RoleClaimType = ClaimTypes.Role
