@@ -1,0 +1,5 @@
+{
+    "appService.preDeployTask": "publish-release",
+    "appService.deploySubpath": "bin\\Release\\net9.0\\publish",
+    "appService.defaultWebAppToDeploy": "/subscriptions/2f3813ec-cce4-4e67-83f7-efc8e635f9fe/resourceGroups/Visingsobiodlare-backend/providers/Microsoft.Web/sites/visingso-biodlare-api"
+}
