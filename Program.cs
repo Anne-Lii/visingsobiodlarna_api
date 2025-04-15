@@ -13,6 +13,17 @@ var builder = WebApplication.CreateBuilder(args);
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://*:{port}");
 
+//CORS-tjänst
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000") //Tillåt begärningar från localhost:3000
+              .AllowAnyHeader() //Tillåt alla headers
+              .AllowAnyMethod(); //Tillåt alla HTTP-metoder (GET, POST, PUT, DELETE, etc.)
+    });
+});
+
 builder.Services.AddControllers().AddJsonOptions(options => 
 {
     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
@@ -72,7 +83,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseRouting();
 app.UseAuthentication();////kollar om användaren är inloggad och har JWT
 app.UseAuthorization();//kollar om användaren har rätt roll/rättigheter
