@@ -83,6 +83,8 @@ async Task SeedRolesAsync()
     await RoleInitializer.SeedRolesAsync(services);
 }
 
+app.MapGet("/api/test", () => "API fungerar!");
+
 // Anropa metoden innan app.Run()
 await SeedRolesAsync();
 
