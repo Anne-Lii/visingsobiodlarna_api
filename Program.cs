@@ -51,6 +51,9 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
+//Aktiverar CORS före övriga middleware
+app.UseCors("AllowLocalhost");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
