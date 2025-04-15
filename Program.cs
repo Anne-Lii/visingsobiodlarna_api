@@ -72,6 +72,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseRouting();
 app.UseAuthentication();////kollar om användaren är inloggad och har JWT
 app.UseAuthorization();//kollar om användaren har rätt roll/rättigheter
 app.MapControllers();
