@@ -90,4 +90,11 @@ app.MapGet("/api/test", () => "API fungerar!");
 // Anropa metoden innan app.Run()
 await SeedRolesAsync();
 
+
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"Request: {context.Request.Method} {context.Request.Path}");
+    await next();
+});
+
 app.Run();
