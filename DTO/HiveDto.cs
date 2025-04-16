@@ -4,7 +4,7 @@ namespace visingsobiodlarna_backend.DTOs
 {
     public class HiveDto
     {
-        [JsonPropertyName("id")] // Matchar frontendens camelCase
+        [JsonPropertyName("id")]// Matchar frontendens camelCase
         public int Id { get; set; }
 
         [JsonPropertyName("name")]
