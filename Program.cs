@@ -8,7 +8,6 @@ using System.Text;
 using visingsobiodlarna_backend.Services;
 using System.Security.Claims;
 
-
 var builder = WebApplication.CreateBuilder(args);
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://*:{port}");
@@ -47,38 +46,32 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-
-//Registrerar autentisering och anger JWT som standard
+//Registrerar autentisering och ange JWT som standard
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-
-//Lägger till stöd för JWT-baserad autentisering
 .AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,//Kontroll att token är utfärdad av rätt källa
-        ValidateAudience = true,//Kontroll att token är avsedd för rätt mottagare
-        ValidateLifetime = true, //Kontroll att token inte har gått ut
-        ValidateIssuerSigningKey = true,//Kontroll att token är korrekt validerad
-
-        //hämtar inställningar från appsettings.json
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),//Hemlig nyckel som används för att validera token
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
         RoleClaimType = ClaimTypes.Role
     };
 });
 
 var app = builder.Build();
 
-//Aktiverar CORS före övriga middleware
-app.UseCors("AllowLocalhost");
 
-// Configure the HTTP request pipeline.
+
+//Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -87,6 +80,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseCors("AllowLocalhost");//Aktiverar CORS för localhost
 app.UseAuthentication();////kollar om användaren är inloggad och har JWT
 app.UseAuthorization();//kollar om användaren har rätt roll/rättigheter
 app.MapControllers();
