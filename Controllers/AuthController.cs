@@ -24,8 +24,15 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterDto model)
+    public async Task<IActionResult> Register([FromBody] RegisterDto model)
     {
+
+        Console.WriteLine("Incoming register model:");
+        Console.WriteLine($"Email: {model?.Email}");
+        Console.WriteLine($"FirstName: {model?.FirstName}");
+        Console.WriteLine($"LastName: {model?.LastName}");
+        Console.WriteLine($"Password: {model?.Password}");
+
          //validering 
         if (string.IsNullOrWhiteSpace(model.Email))
         {
