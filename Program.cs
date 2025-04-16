@@ -23,9 +23,11 @@ builder.Services.AddCors(options =>
     });
 });
 
+//Konfiguration för hur JSON ska hanteras i APIet
 builder.Services.AddControllers().AddJsonOptions(options => 
 {
-    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;//förhindrar oändlig cirkulation vid serialisering
+    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;//matchar inkommande JSON-fält camelCase-Pascal
 });
 
 builder.Services.AddEndpointsApiExplorer();
