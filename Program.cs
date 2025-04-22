@@ -19,7 +19,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("http://localhost:3000", "https://localhost:3000") //Tillåt begärningar från localhost:3000
               .AllowAnyHeader() //Tillåt alla headers
-              .AllowAnyMethod(); //Tillåt alla HTTP-metoder (GET, POST, PUT, DELETE, etc.)
+              .AllowAnyMethod()//Tillåt alla HTTP-metoder (GET, POST, PUT, DELETE, etc.)
+              .AllowCredentials(); 
     });
 });
 
