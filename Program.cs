@@ -23,6 +23,16 @@ builder.Services.AddCors(options =>
     });
 });
 
+//Krav på lösenord vid registrering
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequireDigit = true;//krav på minst en siffra
+    options.Password.RequireLowercase = false;//inget krav på små bokstäver
+    options.Password.RequireUppercase = false;//inget krav på stora bokstäver
+    options.Password.RequireNonAlphanumeric = false;//inget krav på specialtecken
+    options.Password.RequiredLength = 6;//krav på minst 6 tecken
+});
+
 //Konfiguration för hur JSON ska hanteras i APIet
 builder.Services.AddControllers().AddJsonOptions(options => 
 {
@@ -41,7 +51,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
     }
 
-    options.UseSqlServer(connectionString);
+    options.UseSqlServer(connectionString, sqlOptions =>
+    {
+        sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorNumbersToAdd: null
+        );
+    });
 });
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
