@@ -87,7 +87,7 @@ builder.Services.AddAuthentication(options =>
         RoleClaimType = ClaimTypes.Role
     };
 
-    //Ta token från cookie om den inte finns i Authorization-headern
+    //Ta token från cookies om den inte finns i Authorization-headern
     options.Events = new JwtBearerEvents
     {
         OnMessageReceived = context =>
@@ -114,7 +114,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
 app.UseCors("AllowLocalhost");//Aktiverar CORS för localhost
+
 app.UseAuthentication();////kollar om användaren är inloggad och har JWT
 app.UseAuthorization();//kollar om användaren har rätt roll/rättigheter
 app.MapControllers();
