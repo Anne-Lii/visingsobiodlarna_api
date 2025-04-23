@@ -33,7 +33,7 @@ public class AuthController : ControllerBase
         Console.WriteLine($"LastName: {model?.LastName}");
         Console.WriteLine($"Password: {model?.Password}");
 
-         //validering 
+        //validering 
         if (string.IsNullOrWhiteSpace(model.Email))
         {
             return BadRequest("E-postadress är obligatorisk.");
@@ -135,6 +135,18 @@ public class AuthController : ControllerBase
     {
         Response.Cookies.Delete("jwt");
         return Ok(new { message = "Utloggad" });
+    }
+
+    [HttpPost("validate")]
+
+    public IActionResult Validate()
+    {
+        if (User.Identity?.IsAuthenticated ?? false)
+        {
+            return Ok(new { message = "Inloggad" });
+        }
+
+        return Unauthorized();
     }
 
 }
