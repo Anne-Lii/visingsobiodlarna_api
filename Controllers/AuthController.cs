@@ -100,7 +100,7 @@ public class AuthController : ControllerBase
             new Claim(ClaimTypes.NameIdentifier, user.Id)
         };
 
-        // Lägger till varje roll som en egen claimi token
+        // Lägger till varje roll som en egen claim i token
         claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
@@ -116,7 +116,25 @@ public class AuthController : ControllerBase
 
         var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
-        return Ok(new { token = tokenString });
+        //skickar JWT som en HttpOnly-cookie
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = false,//kräver HTTPS - stäng av under utveckling!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTime.UtcNow.AddHours(1)
+        };
+
+        Response.Cookies.Append("jwt", tokenString, cookieOptions);
+
+        return Ok(new { message = "Inloggning lyckades" });
+    }
+
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        Response.Cookies.Delete("jwt");
+        return Ok(new { message = "Utloggad" });
     }
 
 }
