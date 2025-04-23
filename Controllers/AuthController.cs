@@ -16,11 +16,13 @@ public class AuthController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IConfiguration _config;
+    private readonly IWebHostEnvironment _env;
 
-    public AuthController(UserManager<ApplicationUser> userManager, IConfiguration config)
+    public AuthController(UserManager<ApplicationUser> userManager, IConfiguration config, IWebHostEnvironment env)
     {
         _userManager = userManager;
         _config = config;
+        _env = env;
     }
 
     [HttpPost("register")]
@@ -120,8 +122,8 @@ public class AuthController : ControllerBase
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            Secure = false,//kräver HTTPS - stäng av under utveckling!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            SameSite = SameSiteMode.Strict,
+            Secure = !_env.IsDevelopment(),//false i utveckling och true om INTE i utvecklingsläge
+            SameSite = SameSiteMode.None, //tillåter backend och frontend på olika domäner
             Expires = DateTime.UtcNow.AddHours(1)
         };
 
