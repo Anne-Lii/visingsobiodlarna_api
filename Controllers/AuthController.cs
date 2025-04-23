@@ -122,7 +122,7 @@ public class AuthController : ControllerBase
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            Secure = !_env.IsDevelopment(),//false i utveckling och true om INTE i utvecklingsläge
+            Secure = false,//false i utveckling och true om INTE i utvecklingsläge
             SameSite = SameSiteMode.None, //tillåter backend och frontend på olika domäner
             Expires = DateTime.UtcNow.AddHours(1)
         };
