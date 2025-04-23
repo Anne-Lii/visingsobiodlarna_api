@@ -124,7 +124,7 @@ public class AuthController : ControllerBase
             HttpOnly = true,
             Secure = false,//false i utveckling och true om INTE i utvecklingsläge
             SameSite = SameSiteMode.None, //tillåter backend och frontend på olika domäner
-            Expires = DateTime.UtcNow.AddHours(1)
+            Expires = DateTime.UtcNow.AddHours(1),
         };
 
         Response.Cookies.Append("jwt", tokenString, cookieOptions);
