@@ -137,7 +137,7 @@ public class AuthController : ControllerBase
         return Ok(new { message = "Utloggad" });
     }
 
-    [HttpPost("validate")]
+    [HttpGet("validate")]
 
     public IActionResult Validate()
     {
