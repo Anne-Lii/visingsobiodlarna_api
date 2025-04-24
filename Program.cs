@@ -20,7 +20,7 @@ builder.Services.AddCors(options =>
         policy.WithOrigins("http://localhost:3000", "https://localhost:3000") //Tillåt begärningar från localhost:3000
               .AllowAnyHeader() //Tillåt alla headers
               .AllowAnyMethod()//Tillåt alla HTTP-metoder (GET, POST, PUT, DELETE, etc.)
-              .AllowCredentials(); 
+              .AllowCredentials();
     });
 });
 
@@ -34,12 +34,18 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredLength = 6;//krav på minst 6 tecken
 });
 
-//Konfiguration för hur JSON ska hanteras i APIet
-builder.Services.AddControllers().AddJsonOptions(options => 
-{
-    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;//förhindrar oändlig cirkulation vid serialisering
-    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;//matchar inkommande JSON-fält camelCase-Pascal
-});
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        //undviker serialiseringsfel vid objekt som referar till varandra hive - apiary - hive - 
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        
+        //Behåller PascalCase i JSON-svar
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+        
+        //JSON hanterar stora/små bokstäver i property-namn
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
