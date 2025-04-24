@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using visingsobiodlarna_backend.Data;
+using visingsobiodlarna_backend.DTOs;
 using visingsobiodlarna_backend.Models;
 
 namespace visingsobiodlarna_backend.Controllers;
@@ -18,10 +19,21 @@ public class NewsController : ControllerBase
 
     //Hämtar alla nyheter
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<NewsModel>>> GetNews()
-    {
-        return await _context.NewsModels.OrderByDescending(n => n.PublishDate).ToListAsync();
-    }
+    public async Task<ActionResult<IEnumerable<NewsDto>>> GetNews()
+{
+    var newsList = await _context.NewsModels
+        .OrderByDescending(n => n.PublishDate)
+        .Select(n => new NewsDto
+        {
+            Id = n.Id,
+            Title = n.Title,
+            Content = n.Content,
+            PublishDate = n.PublishDate.ToString("o") // ISO 8601
+        })
+        .ToListAsync();
+
+    return Ok(newsList);
+}
 
     //Hämtar en specifik nyhet baserat på id
     [HttpGet("{id}")]
