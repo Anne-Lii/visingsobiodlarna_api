@@ -93,16 +93,15 @@ public class AuthController : ControllerBase
             return Unauthorized("Kontot är ännu inte godkänt av administratör.");
         }
 
-        var userRoles = await _userManager.GetRolesAsync(user);//hämtar användarens roll från databasen
+        var userRoles = await _userManager.GetRolesAsync(user);
 
         var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.FullName ?? ""),
-            new Claim(ClaimTypes.Email, user.Email ?? ""),
-            new Claim(ClaimTypes.NameIdentifier, user.Id)
-        };
+    {
+        new Claim(ClaimTypes.Name, user.FullName ?? ""),
+        new Claim(ClaimTypes.Email, user.Email ?? ""),
+        new Claim(ClaimTypes.NameIdentifier, user.Id)
+    };
 
-        // Lägger till varje roll som en egen claim i token
         claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
@@ -118,13 +117,13 @@ public class AuthController : ControllerBase
 
         var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
-        //skickar JWT som en HttpOnly-cookie
+        var isDev = _env.IsDevelopment();
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            Secure = false,//false i utveckling och true om INTE i utvecklingsläge
-            SameSite = SameSiteMode.None, //tillåter backend och frontend på olika domäner
-            Expires = DateTime.UtcNow.AddHours(1),
+            Secure = !isDev, // bara true i produktion
+            SameSite = isDev ? SameSiteMode.Lax : SameSiteMode.None,
+            Expires = DateTime.UtcNow.AddHours(1)
         };
 
         Response.Cookies.Append("jwt", tokenString, cookieOptions);
