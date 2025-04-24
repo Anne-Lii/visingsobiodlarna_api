@@ -7,7 +7,6 @@ using visingsobiodlarna_backend.Models;
 namespace visingsobiodlarna_backend.Controllers;
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "admin")]
 public class NewsController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
@@ -21,7 +20,7 @@ public class NewsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<NewsModel>>> GetNews()
     {
-        return await _context.NewsModels.ToListAsync();
+        return await _context.NewsModels.OrderByDescending(n => n.PublishDate).ToListAsync();
     }
 
     //Hämtar en specifik nyhet baserat på id
@@ -41,6 +40,8 @@ public class NewsController : ControllerBase
     [Authorize(Roles = "admin")]
     public async Task<ActionResult<NewsModel>> CreateNews(NewsModel newsItem)
     {
+        newsItem.PublishDate = DateTime.UtcNow;
+
         _context.NewsModels.Add(newsItem);
         await _context.SaveChangesAsync();
 
