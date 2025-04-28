@@ -139,15 +139,28 @@ public class AuthController : ControllerBase
     }
 
     [HttpGet("validate")]
-
-    public IActionResult Validate()
+    public async Task<IActionResult> Validate()
     {
         if (User.Identity?.IsAuthenticated ?? false)
-        {
-            return Ok(new { message = "Inloggad" });
-        }
+    {
+        var email = User.FindFirstValue(ClaimTypes.Email);
+        if (string.IsNullOrEmpty(email))
+            return Unauthorized();
 
-        return Unauthorized();
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+            return Unauthorized();
+
+        var roles = await _userManager.GetRolesAsync(user);
+
+        return Ok(new
+        {
+            email = user.Email,
+            role = roles.FirstOrDefault() //Skickar rollen till frontend admin|member
+        });
+    }
+
+    return Unauthorized();
     }
 
 }
