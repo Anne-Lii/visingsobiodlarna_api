@@ -60,8 +60,8 @@ public class AuthController : ControllerBase
         var user = new ApplicationUser
         {
             UserName = model.Email,
-            Email = model.Email,
-            FirstName = model.FirstName,
+            Email = model.Email.ToLower(),
+            FirstName = model.FirstName.ToLower(),
             LastName = model.LastName,
             IsApprovedByAdmin = false// Alla nya användarkonton måste godkännas av admin
         };

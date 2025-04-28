@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using visingsobiodlarna_backend.Data;
+using visingsobiodlarna_backend.DTOs;
 using visingsobiodlarna_backend.Models;
 
 namespace visingsobiodlarna_backend.Controllers;
@@ -38,18 +39,27 @@ public class AdminController : ControllerBase
 
     //Hämta ej godkända användare
     [HttpGet("pending")]
-    public IActionResult GetPendingUsers()
+    public async Task<IActionResult> GetPendingUsers()
+{
+    try
     {
-        var users = _userManager.Users
+        var users = await _userManager.Users
             .Where(u => !u.IsApprovedByAdmin)
-            .Select(u => new {
-                u.Id,
-                u.Email,
-                u.FullName
-            });
-
+            .Select(u => new PendingUserDto
+            {
+                Id = u.Id,
+                FullName = $"{u.FirstName} {u.LastName}",
+                Email = u.Email
+            })
+            .ToListAsync();
+            
         return Ok(users);
     }
+    catch (Exception ex)
+    {
+        return StatusCode(500, $"Internt serverfel: {ex.Message}");
+    }
+}
 
     //Godkänn användare
     [HttpPut("approve/{userId}")]
