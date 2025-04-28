@@ -71,6 +71,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+    
+//kontroll av JWTkey
+var jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrEmpty(jwtKey))
+{
+    throw new InvalidOperationException("JWT Key not found in configuration.");
+}
 
 //Registrerar autentisering och ange JWT som standard
 builder.Services.AddAuthentication(options =>
