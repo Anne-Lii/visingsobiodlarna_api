@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using visingsobiodlarna_backend.Data;
+using visingsobiodlarna_backend.DTOs;
 using visingsobiodlarna_backend.Models;
 
 namespace visingsobiodlarna_backend.Controllers;
@@ -20,30 +21,56 @@ public class ApiaryController : ControllerBase
 
     //Skapa en ny bigård (POST /api/apiary)
     [HttpPost]
-    public async Task<IActionResult> CreateApiary(ApiaryModel model)
-{
-    if (!ModelState.IsValid)
-        return BadRequest(ModelState);
+    public async Task<IActionResult> CreateApiary(CreateApiaryDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
         //Hämtar UserId från token och sätt den automatiskt
         var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        
-    if (userId == null)
-        return Unauthorized();
 
-    model.UserId = userId;
+        if (userId == null)
+            return Unauthorized();
 
-    _context.Apiaries.Add(model);
-    await _context.SaveChangesAsync();
+        var apiary = new ApiaryModel
+        {
+            Name = dto.Name,
+            Location = dto.Location,
+            UserId = userId
+        };
 
-    return Ok(model);
-}
+        _context.Apiaries.Add(apiary);
+        await _context.SaveChangesAsync();
+
+        return Ok(apiary);
+    }
 
     //Hämtar alla bigårdar (GET /api/apiary)
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
         var apiaries = await _context.Apiaries.Include(a => a.Hives).ToListAsync();
+        return Ok(apiaries);
+    }
+
+    //hämtar inloggad användares alla bigårdar
+    [HttpGet("my")]
+    public async Task<IActionResult> GetMyApiaries()
+    {
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+            return Unauthorized();
+
+        var apiaries = await _context.Apiaries
+            .Where(a => a.UserId == userId)
+            .Select(a => new GetApiaryDto
+            {
+                Id = a.Id,
+                Name = a.Name!,
+                Location = a.Location!
+            })
+            .ToListAsync();
+
         return Ok(apiaries);
     }
 
