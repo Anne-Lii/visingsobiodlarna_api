@@ -21,7 +21,7 @@ public class ApiaryController : ControllerBase
 
     //Skapa en ny bigård (POST /api/apiary)
     [HttpPost]
-    public async Task<IActionResult> CreateApiary(CreateApiaryDto dto)
+    public async Task<IActionResult> CreateApiary(ApiaryDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -63,11 +63,13 @@ public class ApiaryController : ControllerBase
 
         var apiaries = await _context.Apiaries
             .Where(a => a.UserId == userId)
-            .Select(a => new GetApiaryDto
+            .Include(a => a.Hives)
+            .Select(a => new ApiaryDto
             {
                 Id = a.Id,
                 Name = a.Name!,
-                Location = a.Location!
+                Location = a.Location!,
+                HiveCount = a.Hives.Count
             })
             .ToListAsync();
 
