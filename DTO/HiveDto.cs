@@ -10,6 +10,9 @@ namespace visingsobiodlarna_backend.DTOs
         [JsonPropertyName("name")]
         public string? Name { get; set; }
 
+        [JsonPropertyName("description")]
+        public string? Description { get; set; }
+
         [JsonPropertyName("apiaryId")]
         public int ApiaryId { get; set; }
     }
