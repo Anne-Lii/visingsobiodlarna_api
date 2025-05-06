@@ -108,7 +108,7 @@ public class ApiaryController : ControllerBase
             HiveCount = apiary.Hives.Count
         };
 
-        return Ok(apiary);
+        return Ok(dto);
     }
 
     //Redigera bigård (PUT /api/apiary/{id})
