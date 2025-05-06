@@ -42,7 +42,15 @@ public class ApiaryController : ControllerBase
         _context.Apiaries.Add(apiary);
         await _context.SaveChangesAsync();
 
-        return Ok(apiary);
+        var result = new ApiaryDto
+        {
+            Id = apiary.Id,
+            Name = apiary.Name!,
+            Location = apiary.Location!,
+            HiveCount = 0
+        };
+
+        return Ok(result);
     }
 
     //Hämtar alla bigårdar (GET /api/apiary)
@@ -80,12 +88,25 @@ public class ApiaryController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
+
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+            return Unauthorized();
+
         var apiary = await _context.Apiaries
             .Include(a => a.Hives)
-            .FirstOrDefaultAsync(a => a.Id == id);
+            .FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId);
 
         if (apiary == null)
             return NotFound("Bigården kunde inte hittas.");
+
+        var dto = new ApiaryDto
+        {
+            Id = apiary.Id,
+            Name = apiary.Name!,
+            Location = apiary.Location!,
+            HiveCount = apiary.Hives.Count
+        };
 
         return Ok(apiary);
     }
