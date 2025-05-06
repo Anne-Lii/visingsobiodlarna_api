@@ -21,15 +21,36 @@ public class HiveController : ControllerBase
 
     //Skapa en kupa (POST /api/hive)
     [HttpPost]
-    public async Task<IActionResult> CreateHive(HiveModel model)
+    public async Task<IActionResult> CreateHive(HiveDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+            return Unauthorized();
+
+        var apiary = await _context.Apiaries
+       .FirstOrDefaultAsync(a => a.Id == dto.ApiaryId && a.UserId == userId);
+
+        if (apiary == null)
+            return Forbid("Du får inte lägga till kupor i denna bigård.");
+
+        var model = new HiveModel
+        {
+            Name = dto.Name!,
+            ApiaryId = dto.ApiaryId
+        };
+
         _context.Hives.Add(model);
         await _context.SaveChangesAsync();
 
-        return Ok(model);
+        return Ok(new HiveDto
+        {
+            Id = model.Id,
+            Name = model.Name,
+            ApiaryId = model.ApiaryId
+        });
     }
 
     //Hämtar alla kupor (GET /api/hive)
@@ -52,51 +73,76 @@ public class HiveController : ControllerBase
             .Where(h => h.ApiaryId == apiaryId)
             .ToListAsync();
 
-        return Ok(hives);
+        var dtoList = hives.Select(h => new HiveDto
+        {
+            Id = h.Id,
+            Name = h.Name,
+            ApiaryId = h.ApiaryId
+        }).ToList();
+
+        return Ok(dtoList);
+
     }
 
     //Hämtar alla kupor för en user (GET /api/hive/by-user/{userId})
     [HttpGet("by-user/{userId}")]
     public async Task<IActionResult> GetHivesByUser(string userId)
     {
-    var hives = await _context.Hives
-        .Include(h => h.Apiary)
-        .Where(h => h.Apiary != null && h.Apiary.UserId == userId)
-        .Select(h => new HiveDto
-        {
-            Id = h.Id,
-            Name = h.Name,
-            ApiaryId = h.ApiaryId
-        })
-        .ToListAsync();
+        var hives = await _context.Hives
+            .Include(h => h.Apiary)
+            .Where(h => h.Apiary != null && h.Apiary.UserId == userId)
+            .Select(h => new HiveDto
+            {
+                Id = h.Id,
+                Name = h.Name,
+                ApiaryId = h.ApiaryId
+            })
+            .ToListAsync();
 
-    return Ok(hives);
-}
+        return Ok(hives);
+    }
 
     //Uppdatera en kupa (PUT /api/hive/{id})
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateHive(int id, HiveModel updatedHive)
+    public async Task<IActionResult> UpdateHive(int id, HiveDto dto)
     {
-        var hive = await _context.Hives.FindAsync(id);
+
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+            return Unauthorized();
+
+        var hive = await _context.Hives
+        .Include(h => h.Apiary)
+        .FirstOrDefaultAsync(h => h.Id == id && h.Apiary != null && h.Apiary.UserId == userId);
+
         if (hive == null)
-            return NotFound("Kupan kunde inte hittas.");
+            return NotFound("Kupan kunde inte hittas eller tillhör inte användaren.");
 
-        hive.Name = updatedHive.Name;
-        hive.ApiaryId = updatedHive.ApiaryId;
-
-        _context.Hives.Update(hive);
+        hive.Name = dto.Name!;
         await _context.SaveChangesAsync();
 
-        return Ok(hive);
+        return Ok(new HiveDto
+        {
+            Id = hive.Id,
+            Name = hive.Name,
+            ApiaryId = hive.ApiaryId
+        });
     }
 
     //Radera en kupa (DELETE /api/hive/{id})
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteHive(int id)
     {
-        var hive = await _context.Hives.FindAsync(id);
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+            return Unauthorized();
+
+        var hive = await _context.Hives
+        .Include(h => h.Apiary)
+        .FirstOrDefaultAsync(h => h.Id == id && h.Apiary != null && h.Apiary.UserId == userId);
+
         if (hive == null)
-            return NotFound("Kupan kunde inte hittas.");
+            return NotFound("Kupan kunde inte hittas eller tillhör inte användaren.");
 
         _context.Hives.Remove(hive);
         await _context.SaveChangesAsync();
