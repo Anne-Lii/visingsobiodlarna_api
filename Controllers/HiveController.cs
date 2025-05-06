@@ -79,6 +79,7 @@ public class HiveController : ControllerBase
         {
             Id = h.Id,
             Name = h.Name,
+            Description = h.Description,
             ApiaryId = h.ApiaryId
         }).ToList();
 
@@ -121,6 +122,7 @@ public class HiveController : ControllerBase
             return NotFound("Kupan kunde inte hittas eller tillhör inte användaren.");
 
         hive.Name = dto.Name!;
+        hive.Description = dto.Description;
         await _context.SaveChangesAsync();
 
         return Ok(new HiveDto

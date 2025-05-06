@@ -103,8 +103,8 @@ public class ApiaryController : ControllerBase
         var dto = new ApiaryDto
         {
             Id = apiary.Id,
-            Name = apiary.Name!,
-            Location = apiary.Location!,
+            Name = apiary.Name ?? "Namnlös",
+            Location = apiary.Location ?? "Okänd plats",
             HiveCount = apiary.Hives.Count
         };
 
@@ -115,6 +115,8 @@ public class ApiaryController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateApiary(int id, ApiaryDto dto)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
         var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         if (userId == null)
