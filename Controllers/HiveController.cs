@@ -39,6 +39,7 @@ public class HiveController : ControllerBase
         var model = new HiveModel
         {
             Name = dto.Name!,
+            Description = dto.Description,
             ApiaryId = dto.ApiaryId
         };
 
@@ -49,6 +50,7 @@ public class HiveController : ControllerBase
         {
             Id = model.Id,
             Name = model.Name,
+            Description = model.Description,
             ApiaryId = model.ApiaryId
         });
     }
