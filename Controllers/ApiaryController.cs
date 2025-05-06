@@ -113,19 +113,30 @@ public class ApiaryController : ControllerBase
 
     //Redigera bigård (PUT /api/apiary/{id})
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateApiary(int id, ApiaryModel updatedApiary)
+    public async Task<IActionResult> UpdateApiary(int id, ApiaryDto dto)
     {
-        var apiary = await _context.Apiaries.FindAsync(id);
-        if (apiary == null)
-            return NotFound("Bigården kunde inte hittas.");
 
-        apiary.Name = updatedApiary.Name;
-        apiary.Location = updatedApiary.Location;
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+            return Unauthorized();
+
+        var apiary = await _context.Apiaries.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId);
+        if (apiary == null)
+            return NotFound("Bigården kunde inte hittas eller tillhör inte användaren.");
+
+        apiary.Name = dto.Name;
+        apiary.Location = dto.Location;
 
         _context.Apiaries.Update(apiary);
         await _context.SaveChangesAsync();
 
-        return Ok(apiary);
+        return Ok(new ApiaryDto
+        {
+            Id = apiary.Id,
+            Name = apiary.Name!,
+            Location = apiary.Location!,
+            HiveCount = apiary.Hives.Count
+        });
     }
 
     //Radera en bigård (DELETE /api/apiary/{id})
