@@ -40,6 +40,8 @@ public class HiveController : ControllerBase
         {
             Name = dto.Name!,
             Description = dto.Description,
+            StartYear = dto.StartYear,
+            StartMonth = dto.StartMonth,
             ApiaryId = dto.ApiaryId
         };
 
@@ -51,6 +53,8 @@ public class HiveController : ControllerBase
             Id = model.Id,
             Name = model.Name,
             Description = model.Description,
+            StartYear = model.StartYear,
+            StartMonth = model.StartMonth,
             ApiaryId = model.ApiaryId
         });
     }
@@ -104,6 +108,33 @@ public class HiveController : ControllerBase
 
         return Ok(hives);
     }
+
+    // Hämta en specifik kupa
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetHiveById(int id)
+    {
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+            return Unauthorized();
+
+        var hive = await _context.Hives
+            .Include(h => h.Apiary)
+            .FirstOrDefaultAsync(h => h.Id == id && h.Apiary != null && h.Apiary.UserId == userId);
+
+        if (hive == null)
+            return NotFound("Kupan hittades inte eller tillhör inte användaren.");
+
+        return Ok(new HiveDto
+        {
+            Id = hive.Id,
+            Name = hive.Name,
+            Description = hive.Description,
+            StartYear = hive.StartYear,
+            StartMonth = hive.StartMonth,
+            ApiaryId = hive.ApiaryId
+        });
+    }
+
 
     //Uppdatera en kupa (PUT /api/hive/{id})
     [HttpPut("{id}")]

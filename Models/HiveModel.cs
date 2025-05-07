@@ -10,6 +10,8 @@ public class HiveModel
     public string Name { get; set; } = string.Empty;
 
     public string? Description { get; set; }
+    public int StartYear { get; set; }
+    public int StartMonth { get; set; }
 
     [Required]
     public int ApiaryId { get; set; }
