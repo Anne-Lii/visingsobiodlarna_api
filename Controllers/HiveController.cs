@@ -82,7 +82,8 @@ public class HiveController : ControllerBase
             Id = h.Id,
             Name = h.Name,
             Description = h.Description,
-            ApiaryId = h.ApiaryId
+            ApiaryId = h.ApiaryId,
+            StartYear = h.StartYear
         }).ToList();
 
         return Ok(dtoList);
@@ -100,7 +101,9 @@ public class HiveController : ControllerBase
             {
                 Id = h.Id,
                 Name = h.Name,
-                ApiaryId = h.ApiaryId
+                ApiaryId = h.ApiaryId,
+                StartYear = h.StartYear,
+                Description = h.Description
             })
             .ToListAsync();
 
@@ -151,14 +154,18 @@ public class HiveController : ControllerBase
 
         hive.Name = dto.Name!;
         hive.Description = dto.Description;
+        hive.StartYear = dto.StartYear;
+        
         await _context.SaveChangesAsync();
 
         return Ok(new HiveDto
-        {
-            Id = hive.Id,
-            Name = hive.Name,
-            ApiaryId = hive.ApiaryId
-        });
+    {
+        Id = hive.Id,
+        Name = hive.Name,
+        Description = hive.Description,
+        StartYear = hive.StartYear,
+        ApiaryId = hive.ApiaryId
+    });
     }
 
     //Radera en kupa (DELETE /api/hive/{id})
