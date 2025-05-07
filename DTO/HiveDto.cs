@@ -15,6 +15,12 @@ namespace visingsobiodlarna_backend.DTOs
         [JsonPropertyName("description")]
         public string? Description { get; set; }
 
+        [JsonPropertyName("startYear")]
+        public int StartYear { get; set; }
+
+        [JsonPropertyName("startMonth")]
+        public int StartMonth { get; set; }
+
         [Required]
         [JsonPropertyName("apiaryId")]
         public int ApiaryId { get; set; }
