@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using visingsobiodlarna_backend.Data;
+using visingsobiodlarna_backend.DTOs;
 using visingsobiodlarna_backend.Models;
 
 namespace visingsobiodlarna_backend.Controllers;
@@ -20,15 +21,29 @@ public class MitesController : ControllerBase
 
     //Skapa en ny kvalsterrapport
     [HttpPost]
-    public async Task<IActionResult> CreateMiteReport(MitesModel model)
+    public async Task<IActionResult> CreateMiteReport([FromBody] MiteDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
+        var model = new MitesModel
+        {
+            HiveId = dto.HiveId,
+            Year = dto.Year,
+            Week = dto.Week,
+            MiteCount = dto.MiteCount
+        };
+
         _context.Mites.Add(model);
         await _context.SaveChangesAsync();
 
-        return Ok(model);
+        return Ok(new MiteDto
+        {
+            HiveId = model.HiveId,
+            Year = model.Year,
+            Week = model.Week,
+            MiteCount = model.MiteCount
+        });
     }
 
     //Hämta alla kvalsterrapporter för en kupa
@@ -56,19 +71,28 @@ public class MitesController : ControllerBase
 
     //Uppdatera en kvalsterrapport
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateMiteReport(int id, MitesModel updatedReport)
+    public async Task<IActionResult> UpdateMiteReport(int id, [FromBody] MiteDto dto)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
         var report = await _context.Mites.FindAsync(id);
         if (report == null)
             return NotFound("Rapporten kunde inte hittas.");
 
-        report.Year = updatedReport.Year;
-        report.Week = updatedReport.Week;
-        report.MiteCount = updatedReport.MiteCount;
+        report.Year = dto.Year;
+        report.Week = dto.Week;
+        report.MiteCount = dto.MiteCount;
 
         await _context.SaveChangesAsync();
 
-        return Ok(report);
+        return Ok(new MiteDto
+        {
+            HiveId = report.HiveId,
+            Year = report.Year,
+            Week = report.Week,
+            MiteCount = report.MiteCount
+        });
     }
 
     //Radera en kvalsterrapport
