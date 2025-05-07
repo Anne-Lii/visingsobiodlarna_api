@@ -41,7 +41,6 @@ public class HiveController : ControllerBase
             Name = dto.Name!,
             Description = dto.Description,
             StartYear = dto.StartYear,
-            StartMonth = dto.StartMonth,
             ApiaryId = dto.ApiaryId
         };
 
@@ -54,7 +53,6 @@ public class HiveController : ControllerBase
             Name = model.Name,
             Description = model.Description,
             StartYear = model.StartYear,
-            StartMonth = model.StartMonth,
             ApiaryId = model.ApiaryId
         });
     }
@@ -130,7 +128,6 @@ public class HiveController : ControllerBase
             Name = hive.Name,
             Description = hive.Description,
             StartYear = hive.StartYear,
-            StartMonth = hive.StartMonth,
             ApiaryId = hive.ApiaryId
         });
     }
