@@ -5,6 +5,9 @@ namespace visingsobiodlarna_backend.DTOs;
 
 public class MiteDto
 {
+
+    public int? Id { get; set; }
+    
     [Required]
     [JsonPropertyName("hiveId")]
     public int HiveId { get; set; }

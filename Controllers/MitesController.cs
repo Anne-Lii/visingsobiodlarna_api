@@ -39,6 +39,7 @@ public class MitesController : ControllerBase
 
         return Ok(new MiteDto
         {
+            Id = model.Id,
             HiveId = model.HiveId,
             Year = model.Year,
             Week = model.Week,
@@ -54,7 +55,14 @@ public class MitesController : ControllerBase
             .Where(r => r.HiveId == hiveId)
             .ToListAsync();
 
-        return Ok(reports);
+        return Ok(reports.Select(r => new MiteDto
+        {
+            Id = r.Id, // ✅ här
+            HiveId = r.HiveId,
+            Year = r.Year,
+            Week = r.Week,
+            MiteCount = r.MiteCount
+        }));
     }
 
     //Hämta alla kvalsterrapporter för en bigård
@@ -66,7 +74,14 @@ public class MitesController : ControllerBase
             .Where(r => r.Hive != null && r.Hive.ApiaryId == apiaryId)
             .ToListAsync();
 
-        return Ok(reports);
+        return Ok(reports.Select(r => new MiteDto
+        {
+            Id = r.Id, // ✅ här
+            HiveId = r.HiveId,
+            Year = r.Year,
+            Week = r.Week,
+            MiteCount = r.MiteCount
+        }));
     }
 
     //Uppdatera en kvalsterrapport
@@ -88,6 +103,7 @@ public class MitesController : ControllerBase
 
         return Ok(new MiteDto
         {
+
             HiveId = report.HiveId,
             Year = report.Year,
             Week = report.Week,
