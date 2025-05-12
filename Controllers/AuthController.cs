@@ -121,9 +121,9 @@ public class AuthController : ControllerBase
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            Secure = !isDev, // bara true i produktion
+            Secure = !isDev, //bara true i produktion
             SameSite = isDev ? SameSiteMode.Lax : SameSiteMode.None,
-            Expires = DateTime.UtcNow.AddHours(1)
+            Expires = DateTime.UtcNow.AddHours(12)
         };
 
         Response.Cookies.Append("jwt", tokenString, cookieOptions);
