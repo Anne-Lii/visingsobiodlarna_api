@@ -111,6 +111,35 @@ public class MitesController : ControllerBase
         });
     }
 
+    //uppdatera en kvalsterrapport baserat på kupa, år och vecka
+    [HttpPut]
+    public async Task<IActionResult> UpdateMiteReportByHiveYearWeek([FromBody] MiteDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var report = await _context.Mites.FirstOrDefaultAsync(r =>
+            r.HiveId == dto.HiveId &&
+            r.Year == dto.Year &&
+            r.Week == dto.Week);
+
+        if (report == null)
+            return NotFound("Ingen rapport hittades att uppdatera.");
+
+        report.MiteCount = dto.MiteCount;
+        await _context.SaveChangesAsync();
+
+        return Ok(new MiteDto
+        {
+            Id = report.Id,
+            HiveId = report.HiveId,
+            Year = report.Year,
+            Week = report.Week,
+            MiteCount = report.MiteCount
+        });
+    }
+
+
     //Radera en kvalsterrapport
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteMiteReport(int id)
