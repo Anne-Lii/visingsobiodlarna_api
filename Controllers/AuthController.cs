@@ -142,25 +142,57 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Validate()
     {
         if (User.Identity?.IsAuthenticated ?? false)
-    {
-        var email = User.FindFirstValue(ClaimTypes.Email);
-        if (string.IsNullOrEmpty(email))
-            return Unauthorized();
-
-        var user = await _userManager.FindByEmailAsync(email);
-        if (user == null)
-            return Unauthorized();
-
-        var roles = await _userManager.GetRolesAsync(user);
-
-        return Ok(new
         {
-            email = user.Email,
-            role = roles.FirstOrDefault() //Skickar rollen till frontend admin|member
-        });
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(email))
+                return Unauthorized();
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return Unauthorized();
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return Ok(new
+            {
+                email = user.Email,
+                role = roles.FirstOrDefault() //Skickar rollen till frontend admin|member
+            });
+        }
+
+        return Unauthorized();
     }
 
-    return Unauthorized();
+    //Glömt lösenord
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+    {
+        var user = await _userManager.FindByEmailAsync(dto.Email);
+        if (user == null) return Ok("Om kontot existerar skickas ett mejl med återställningslänk.");
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var resetUrl = $"https://localhost:3000/reset_password?email={Uri.EscapeDataString(user.Email)}&token={Uri.EscapeDataString(token)}";
+
+        //Skickar e-post
+        Console.WriteLine("Återställningslänk: " + resetUrl);
+
+        return Ok("Om kontot existerar skickas ett mejl med återställningslänk.");
     }
+
+    //Reset lösenord
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+    {
+        var user = await _userManager.FindByEmailAsync(dto.Email);
+        if (user == null) return BadRequest("Felaktig begäran.");
+
+        var result = await _userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
+
+        if (!result.Succeeded)
+            return BadRequest(result.Errors);
+
+        return Ok("Lösenordet har återställts.");
+    }
+
 
 }
