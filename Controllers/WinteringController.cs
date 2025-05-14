@@ -25,13 +25,13 @@ public class WinteringController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-            //Sätter UserId från inloggad användare
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            
-            if (userId == null)
-                return Unauthorized();
+        //Sätter UserId från inloggad användare
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-            model.UserId = userId;
+        if (userId == null)
+            return Unauthorized();
+
+        model.UserId = userId;
 
         _context.Winterings.Add(model);
         await _context.SaveChangesAsync();
@@ -40,9 +40,13 @@ public class WinteringController : ControllerBase
     }
 
     //Hämtar alla invintringsrapporter för en användare
-    [HttpGet("by-user/{userId}")]
-    public async Task<IActionResult> GetWinteringsByUser(string userId)
+    [HttpGet("by-user")]
+    public async Task<IActionResult> GetWinteringsByUser()
     {
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+            return Unauthorized();
+
         var reports = await _context.Winterings
             .Where(w => w.UserId == userId)
             .ToListAsync();

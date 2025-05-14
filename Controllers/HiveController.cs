@@ -91,9 +91,13 @@ public class HiveController : ControllerBase
     }
 
     //Hämtar alla kupor för en user (GET /api/hive/by-user/{userId})
-    [HttpGet("by-user/{userId}")]
-    public async Task<IActionResult> GetHivesByUser(string userId)
+    [HttpGet("by-user")]
+    public async Task<IActionResult> GetHivesByUser()
     {
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+            return Unauthorized();
+
         var hives = await _context.Hives
             .Include(h => h.Apiary)
             .Where(h => h.Apiary != null && h.Apiary.UserId == userId)
@@ -109,6 +113,7 @@ public class HiveController : ControllerBase
 
         return Ok(hives);
     }
+
 
     // Hämta en specifik kupa
     [HttpGet("{id}")]
@@ -155,17 +160,17 @@ public class HiveController : ControllerBase
         hive.Name = dto.Name!;
         hive.Description = dto.Description;
         hive.StartYear = dto.StartYear;
-        
+
         await _context.SaveChangesAsync();
 
         return Ok(new HiveDto
-    {
-        Id = hive.Id,
-        Name = hive.Name,
-        Description = hive.Description,
-        StartYear = hive.StartYear,
-        ApiaryId = hive.ApiaryId
-    });
+        {
+            Id = hive.Id,
+            Name = hive.Name,
+            Description = hive.Description,
+            StartYear = hive.StartYear,
+            ApiaryId = hive.ApiaryId
+        });
     }
 
     //Radera en kupa (DELETE /api/hive/{id})

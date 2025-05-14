@@ -41,12 +41,16 @@ public class HoneyHarvestController : ControllerBase
     }
 
     //Hämtar alla skörderapporter för en användare
-    [HttpGet("by-user/{userId}")]
-    public async Task<IActionResult> GetHarvestsByUser(string userId)
+    [HttpGet("by-user")]
+    public async Task<IActionResult> GetHarvestsByUser()
     {
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+            return Unauthorized();
+
         var harvests = await _context.HoneyHarvests
             .Where(h => h.UserId == userId)
-            .OrderBy(h => h.HarvestDate) // Visa i datumordning
+            .OrderBy(h => h.HarvestDate)
             .ToListAsync();
 
         return Ok(harvests);
