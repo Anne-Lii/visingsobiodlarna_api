@@ -12,5 +12,7 @@ namespace visingsobiodlarna_backend.DTOs
         public string? StartDate { get; set; }
 
         public string? EndDate { get; set; }
+        public string? PublishDate { get; set; }
+        
     }
 }

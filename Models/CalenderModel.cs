@@ -2,7 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace visingsobiodlarna_backend.Models;
 
-public class CalenderModel {
+public class CalenderModel
+{
 
     public int Id { get; set; }
 
@@ -15,5 +16,6 @@ public class CalenderModel {
     public DateTime StartDate { get; set; }
 
     public DateTime? EndDate { get; set; }
+    public DateTime PublishDate { get; set; }
 
 }

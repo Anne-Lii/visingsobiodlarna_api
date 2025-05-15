@@ -23,14 +23,15 @@ namespace visingsobiodlarna_backend.Controllers
         public async Task<ActionResult<IEnumerable<CalendarDto>>> GetCalendarEvents()
         {
             var events = await _context.CalenderModels
-                .OrderByDescending(e => e.Id) //senast tillagda först
+                .OrderByDescending(e => e.PublishDate) //senast tillagda först
                 .Select(e => new CalendarDto
                 {
                     Id = e.Id,
                     Title = e.Title,
                     Content = e.Content,
                     StartDate = e.StartDate.ToString("o"),
-                    EndDate = e.EndDate.HasValue ? e.EndDate.Value.ToString("o") : null
+                    EndDate = e.EndDate.HasValue ? e.EndDate.Value.ToString("o") : null,
+                    PublishDate = e.PublishDate.ToString("o")
                 })
                 .ToListAsync();
 
@@ -54,6 +55,7 @@ namespace visingsobiodlarna_backend.Controllers
         [Authorize(Roles = "admin")]
         public async Task<ActionResult<CalenderModel>> CreateCalendarEvent(CalenderModel calendarEvent)
         {
+             calendarEvent.PublishDate = DateTime.UtcNow;
             _context.CalenderModels.Add(calendarEvent);
             await _context.SaveChangesAsync();
 
