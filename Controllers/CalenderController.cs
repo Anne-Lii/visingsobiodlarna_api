@@ -19,9 +19,21 @@ namespace visingsobiodlarna_backend.Controllers
 
         //Hämtar alla händelser
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CalenderModel>>> GetCalendarEvents()
+        public async Task<ActionResult<IEnumerable<CalendarDto>>> GetCalendarEvents()
         {
-            return await _context.CalenderModels.ToListAsync();
+            var events = await _context.CalenderModels
+                .OrderByDescending(e => e.Id) // senast tillagda först
+                .Select(e => new CalendarDto
+                {
+                    Id = e.Id,
+                    Title = e.Title,
+                    Content = e.Content,
+                    StartDate = e.StartDate.ToString("o"), // ISO 8601
+                    EndDate = e.EndDate.HasValue ? e.EndDate.Value.ToString("o") : null
+                })
+                .ToListAsync();
+
+            return Ok(events);
         }
 
         //Hämtar en händelse
