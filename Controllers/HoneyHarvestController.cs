@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using visingsobiodlarna_backend.Data;
+using visingsobiodlarna_backend.DTOs;
 using visingsobiodlarna_backend.Models;
 
 namespace visingsobiodlarna_backend.Controllers;
@@ -22,7 +23,7 @@ public class HoneyHarvestController : ControllerBase
 
     //Skapa en ny skörderapport
     [HttpPost]
-    public async Task<IActionResult> CreateHarvest(HoneyHarvestModel model)
+    public async Task<IActionResult> CreateHarvest(HoneyHarvestDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -32,12 +33,23 @@ public class HoneyHarvestController : ControllerBase
         if (userId == null)
             return Unauthorized();
 
-        model.UserId = userId;
+        var model = new HoneyHarvestModel
+        {
+            UserId = userId,
+            Year = dto.Year,
+            HarvestDate = dto.HarvestDate,
+            AmountKg = dto.AmountKg,
+            IsTotalForYear = dto.IsTotalForYear,
+            
+        };
 
         _context.HoneyHarvests.Add(model);
         await _context.SaveChangesAsync();
 
-        return Ok(model);
+        //Returnera DTO med id från modellen
+        dto.Id = model.Id;
+
+        return Ok(dto);
     }
 
     //Hämtar alla skörderapporter för en användare
@@ -51,27 +63,36 @@ public class HoneyHarvestController : ControllerBase
         var harvests = await _context.HoneyHarvests
             .Where(h => h.UserId == userId)
             .OrderBy(h => h.HarvestDate)
-            .ToListAsync();
+             .Select(h => new HoneyHarvestDto
+        {
+            Id = h.Id,
+            Year = h.Year,
+            HarvestDate = h.HarvestDate,
+            AmountKg = h.AmountKg,
+            IsTotalForYear = h.IsTotalForYear,
+            BatchId = null
+        })
+        .ToListAsync();
 
         return Ok(harvests);
     }
 
     //Uppdatera en skörderapport
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateHarvest(int id, HoneyHarvestModel updatedHarvest)
+    public async Task<IActionResult> UpdateHarvest(int id, HoneyHarvestDto dto)
     {
         var harvest = await _context.HoneyHarvests.FindAsync(id);
         if (harvest == null)
             return NotFound("Skörderapporten kunde inte hittas.");
 
-        harvest.Year = updatedHarvest.Year;
-        harvest.HarvestDate = updatedHarvest.HarvestDate;
-        harvest.AmountKg = updatedHarvest.AmountKg;
-        harvest.IsTotalForYear = updatedHarvest.IsTotalForYear;
+        harvest.Year = dto.Year;
+        harvest.HarvestDate = dto.HarvestDate;
+        harvest.AmountKg = dto.AmountKg;
+        harvest.IsTotalForYear = dto.IsTotalForYear;
 
         await _context.SaveChangesAsync();
 
-        return Ok(harvest);
+        return Ok(dto);
     }
 
     //ta bort en skörderapport
