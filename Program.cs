@@ -40,8 +40,8 @@ builder.Services.AddControllers()
         //undviker serialiseringsfel vid objekt som referar till varandra hive - apiary - hive - 
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
         
-        //Behåller PascalCase i JSON-svar
-        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+        //Automatisk konvertering till camelCase
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
         
         //JSON hanterar stora/små bokstäver i property-namn
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;

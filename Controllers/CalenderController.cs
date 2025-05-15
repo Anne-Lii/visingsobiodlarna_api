@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using visingsobiodlarna_backend.Data;
+using visingsobiodlarna_backend.DTOs;
 using visingsobiodlarna_backend.Models;
 
 namespace visingsobiodlarna_backend.Controllers
@@ -22,13 +23,13 @@ namespace visingsobiodlarna_backend.Controllers
         public async Task<ActionResult<IEnumerable<CalendarDto>>> GetCalendarEvents()
         {
             var events = await _context.CalenderModels
-                .OrderByDescending(e => e.Id) // senast tillagda först
+                .OrderByDescending(e => e.Id) //senast tillagda först
                 .Select(e => new CalendarDto
                 {
                     Id = e.Id,
                     Title = e.Title,
                     Content = e.Content,
-                    StartDate = e.StartDate.ToString("o"), // ISO 8601
+                    StartDate = e.StartDate.ToString("o"),
                     EndDate = e.EndDate.HasValue ? e.EndDate.Value.ToString("o") : null
                 })
                 .ToListAsync();
