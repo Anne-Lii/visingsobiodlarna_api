@@ -21,7 +21,7 @@ public class HoneyHarvestController : ControllerBase
     }
 
 
-    //Skapa en ny skörderapport
+    //Skapar en ny skörderapport
     [HttpPost]
     public async Task<IActionResult> CreateHarvest(HoneyHarvestDto dto)
     {
@@ -33,6 +33,19 @@ public class HoneyHarvestController : ControllerBase
         if (userId == null)
             return Unauthorized();
 
+        //Hämtar existerande batchId:n för användaren det året
+        var existingBatches = await _context.HoneyHarvests
+            .Where(h => h.UserId == userId && h.Year == dto.Year)
+            .Select(h => h.BatchId)
+            .ToListAsync();
+
+        int countThisYear = existingBatches
+            .Where(b => b != null && b.StartsWith(dto.Year.ToString()))
+            .Count();
+
+        string batchNumber = (countThisYear + 1).ToString().PadLeft(3, '0');
+        string batchId = $"{dto.Year}:{batchNumber}";
+
         var model = new HoneyHarvestModel
         {
             UserId = userId,
@@ -40,14 +53,15 @@ public class HoneyHarvestController : ControllerBase
             HarvestDate = dto.HarvestDate,
             AmountKg = dto.AmountKg,
             IsTotalForYear = dto.IsTotalForYear,
-            BatchId = dto.BatchId
+            BatchId = batchId
         };
 
         _context.HoneyHarvests.Add(model);
         await _context.SaveChangesAsync();
 
-        //Returnera DTO med id från modellen
+        //Returnera DTO med id och batchID
         dto.Id = model.Id;
+        dto.BatchId = batchId;
 
         return Ok(dto);
     }
