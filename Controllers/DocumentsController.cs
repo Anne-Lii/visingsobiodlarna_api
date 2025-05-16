@@ -69,4 +69,18 @@ public class DocumentsController : ControllerBase
 
         return NoContent();
     }
+
+
+    [HttpGet("{id}/downloadlink")]
+    public async Task<IActionResult> GetDownloadLink(int id)
+    {
+        var document = await _context.Documents.FindAsync(id);
+        if (document == null)
+            return NotFound();
+
+        var blobName = new Uri(document.FileUrl).Segments.Last(); //Extraherar blob-namn från URL
+        var sasUrl = _blobService.GetSasUriForBlob(blobName);
+        return Ok(new { url = sasUrl });
+    }
+
 }
