@@ -19,6 +19,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<HoneyHarvestModel> HoneyHarvests { get; set; }//Honungsskörd
     public DbSet<CalenderModel> CalenderModels { get; set; }//Kalenderhändelser
     public DbSet<NewsModel> NewsModels { get; set; }//Nyheter
+    public DbSet<DocumentModel> Documents { get; set; }//Dokument
 
 
 
