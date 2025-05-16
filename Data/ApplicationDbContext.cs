@@ -26,7 +26,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         base.OnModelCreating(builder);
 
-        // Specificera decimal-precision för AmountKg i HoneyHarvestModel
+        //Specificerar decimal-precision för AmountKg i HoneyHarvestModel
         builder.Entity<HoneyHarvestModel>()
         .Property(h => h.AmountKg)
         .HasColumnType("decimal(8,2)");

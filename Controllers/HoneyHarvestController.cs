@@ -40,7 +40,7 @@ public class HoneyHarvestController : ControllerBase
             HarvestDate = dto.HarvestDate,
             AmountKg = dto.AmountKg,
             IsTotalForYear = dto.IsTotalForYear,
-            
+            BatchId = dto.BatchId
         };
 
         _context.HoneyHarvests.Add(model);
@@ -64,15 +64,39 @@ public class HoneyHarvestController : ControllerBase
             .Where(h => h.UserId == userId)
             .OrderBy(h => h.HarvestDate)
              .Select(h => new HoneyHarvestDto
-        {
-            Id = h.Id,
-            Year = h.Year,
-            HarvestDate = h.HarvestDate,
-            AmountKg = h.AmountKg,
-            IsTotalForYear = h.IsTotalForYear,
-            BatchId = null
-        })
+             {
+                 Id = h.Id,
+                 Year = h.Year,
+                 HarvestDate = h.HarvestDate,
+                 AmountKg = h.AmountKg,
+                 IsTotalForYear = h.IsTotalForYear,
+                 BatchId = null
+             })
         .ToListAsync();
+
+        return Ok(harvests);
+    }
+
+    //Hämta skörderapporter för en användare och ett specifikt år för att sätta batchnummer
+    [HttpGet]
+    public async Task<IActionResult> GetHarvestsByYear([FromQuery] int year)
+    {
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+            return Unauthorized();
+
+        var harvests = await _context.HoneyHarvests
+            .Where(h => h.UserId == userId && h.Year == year)
+            .Select(h => new HoneyHarvestDto
+            {
+                Id = h.Id,
+                Year = h.Year,
+                HarvestDate = h.HarvestDate,
+                AmountKg = h.AmountKg,
+                IsTotalForYear = h.IsTotalForYear,
+                BatchId = h.BatchId
+            })
+            .ToListAsync();
 
         return Ok(harvests);
     }
