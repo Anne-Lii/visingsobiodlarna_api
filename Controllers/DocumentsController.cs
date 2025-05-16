@@ -4,6 +4,7 @@ using visingsobiodlarna_backend.Data;
 using visingsobiodlarna_backend.Models;
 using visingsobiodlarna_backend.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace visingsobiodlarna_backend.Controllers;
 
@@ -78,9 +79,12 @@ public class DocumentsController : ControllerBase
         if (document == null)
             return NotFound();
 
-        var blobName = new Uri(document.FileUrl).Segments.Last(); //Extraherar blob-namn från URL
-        var sasUrl = _blobService.GetSasUriForBlob(blobName);
+        var uri = new Uri(document.FileUrl);
+        var blobName = WebUtility.UrlDecode(uri.Segments.Last());
+
+        var sasUrl = _blobService.GetSasUriForBlob(blobName, document.Title);
         return Ok(new { url = sasUrl });
     }
+
 
 }

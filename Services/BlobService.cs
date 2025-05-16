@@ -42,25 +42,28 @@ public class BlobService : IBlobService
 
 
 
- public string GetSasUriForBlob(string blobName)
-{
-    var blobServiceClient = new BlobServiceClient(_settings.ConnectionString);
-    var containerClient = blobServiceClient.GetBlobContainerClient(_settings.ContainerName);
-    var blobClient = containerClient.GetBlobClient(blobName);
-
-    var sasBuilder = new BlobSasBuilder
+    public string GetSasUriForBlob(string blobName, string originalFileName)
     {
-        BlobContainerName = _settings.ContainerName,
-        BlobName = blobName,
-        Resource = "b",
-        ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(10)
-    };
+        var blobServiceClient = new BlobServiceClient(_settings.ConnectionString);
+        var containerClient = blobServiceClient.GetBlobContainerClient(_settings.ContainerName);
+        var blobClient = containerClient.GetBlobClient(blobName);
 
-    sasBuilder.SetPermissions(BlobSasPermissions.Read);
+        var sasBuilder = new BlobSasBuilder
+        {
+            BlobContainerName = _settings.ContainerName,
+            BlobName = blobName,
+            Resource = "b",
+            ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(10),
+            ContentDisposition = $"attachment; filename=\"{originalFileName}\"" // 💡
+        };
 
-    var sasUri = blobClient.GenerateSasUri(sasBuilder);
-    return sasUri.ToString();
-}
+        sasBuilder.SetPermissions(BlobSasPermissions.Read);
+
+        var sasUri = blobClient.GenerateSasUri(sasBuilder);
+        return sasUri.ToString();
+    }
+
+
 
 
 }
