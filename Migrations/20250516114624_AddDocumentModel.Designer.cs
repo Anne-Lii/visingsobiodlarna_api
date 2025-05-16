@@ -12,7 +12,7 @@ using visingsobiodlarna_backend.Data;
 namespace visingsobiodlarna_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250516100649_AddDocumentModel")]
+    [Migration("20250516114624_AddDocumentModel")]
     partial class AddDocumentModel
     {
         /// <inheritdoc />
@@ -288,6 +288,34 @@ namespace visingsobiodlarna_backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CalenderModels");
+                });
+
+            modelBuilder.Entity("visingsobiodlarna_backend.Models.DocumentModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Documents");
                 });
 
             modelBuilder.Entity("visingsobiodlarna_backend.Models.HiveModel", b =>
