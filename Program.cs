@@ -114,13 +114,16 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-var app = builder.Build();
 
 //BlobStorage för dokument
 builder.Services.Configure<AzureBlobStorageSettings>(
     builder.Configuration.GetSection("AzureBlobStorage"));
 
 builder.Services.AddScoped<IBlobService, BlobService>();
+
+
+var app = builder.Build();
+
 
 //Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
