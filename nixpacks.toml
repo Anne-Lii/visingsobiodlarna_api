@@ -5,4 +5,4 @@ nixPkgs = ["dotnet-sdk_8"]
 cmds = ["dotnet publish -c Release -o out"]
 
 [start]
-cmd = ["dotnet", "out/visingsobiodlarna_backend.dll"]
+cmd = "dotnet", "out/visingsobiodlarna_backend.dll"
