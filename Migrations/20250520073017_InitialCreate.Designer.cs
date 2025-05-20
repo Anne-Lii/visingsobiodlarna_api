@@ -12,8 +12,8 @@ using visingsobiodlarna_backend.Data;
 namespace visingsobiodlarna_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250507091922_AddStartDateToHive")]
-    partial class AddStartDateToHive
+    [Migration("20250520073017_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -275,6 +275,9 @@ namespace visingsobiodlarna_backend.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime>("PublishDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -285,6 +288,34 @@ namespace visingsobiodlarna_backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CalenderModels");
+                });
+
+            modelBuilder.Entity("visingsobiodlarna_backend.Models.DocumentModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Documents");
                 });
 
             modelBuilder.Entity("visingsobiodlarna_backend.Models.HiveModel", b =>
@@ -305,9 +336,6 @@ namespace visingsobiodlarna_backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("StartMonth")
-                        .HasColumnType("int");
-
                     b.Property<int>("StartYear")
                         .HasColumnType("int");
 
@@ -326,8 +354,11 @@ namespace visingsobiodlarna_backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AmountKg")
-                        .HasColumnType("int");
+                    b.Property<decimal>("AmountKg")
+                        .HasColumnType("decimal(8,2)");
+
+                    b.Property<string>("BatchId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("HarvestDate")
                         .HasColumnType("datetime2");
