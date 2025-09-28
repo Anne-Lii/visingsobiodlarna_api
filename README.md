@@ -59,6 +59,8 @@ GET	    /api/honeyharvest/by-user/{userId}	Hämta skörderapporter för en anvä
 PUT	    /api/honeyharvest/{id}	            Uppdatera skörderapport
 DELETE	/api/honeyharvest/{id}	            Radera skörderapport
 
+##Kom igång
+Klona projektet:
 ```bash
 git clone https://github.com/Anne-Lii/visingsobiodlarna_api.git
 ```
