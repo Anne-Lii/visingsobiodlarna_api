@@ -1,66 +1,91 @@
-# Visingsöbiodlarna - Digital plattform för kommunikation till Visingsöbiodlarna
+# Visingsö Beekeepers Association – Backend
+Backend API for the **Visingsö Beekeepers Association** digital platform.  
+Developed as part of my final degree project in Web Development (Mid Sweden University, 2025).  
 
-Visingsöbiodlarna är ett examensarbete där syftet är att skapa en digital plattform för biodlare på Visingsö. Plattformen hjälper medlemmar att registrera och hantera information om sina bigårdar, kupor, kvalsterrapporter, invintringsrapporter och honungsskördar.
+---
 
-Alla endpoints (förutom register och login) kräver inloggning med JWT-token (Authorization: Bearer {token}).
-Vissa endpoints kräver även att användaren är admin.
+## 🌟 About
+This project provides the backend for a digital platform supporting beekeepers on the island of Visingsö.  
+The system allows members to register and manage:  
 
-## Teknikstack
-* Backend: ASP.NET Core Web API med Entity Framework Core
-* Frontend: React (TypeScript) 
-* Databas: SQL Server
-* Hosting: Azure App Service + Azure SQL + Azure Blob Storage
-* Auth: JWT-token, rollbaserad åtkomst 
+- Apiaries and hives  
+- Mite reports (per hive and week)  
+- Wintering reports  
+- Honey harvests  
 
-## Controllers och endpoints
+The application uses **role-based authentication**. Regular members can manage their own data, while **admins** can:  
+- Approve new users and assign admin roles  
+- Add, edit, and delete news posts  
+- Create and manage calendar events  
+- Manage documents shared within the association  
 
-### AuthController (Registrering och Inloggning)
-- POST	/api/auth/register	                Registrera en ny användare
-- POST	/api/auth/login	                    Logga in och få JWT-token
+---
 
-### AdminController (Admin-behörighet krävs)
-- GET     /api/admin/users	                Hämta alla användare
-- GET	    /api/admin/pending	                Hämta användare som väntar på godkännande
-- PUT	    /api/admin/approve/{userId}	        Godkänn en användare
-- PUT	    /api/admin/make-admin/{userId}	    Uppgradera användare till admin
-- DELETE	/api/admin/delete/{userId}	        Radera en användare
+## 🛠️ Tech Stack
+- **Backend:** ASP.NET Core Web API with Entity Framework Core  
+- **Frontend:** React (TypeScript)  
+- **Database:** SQL Server  
+- **Hosting:** Azure App Service + Azure SQL + Azure Blob Storage  
+- **Auth:** JWT-based authentication, role-based access control  
 
-### ApiaryController (Bigårdar)
-- POST	/api/apiary	                        Skapa en ny bigård
-- GET	    /api/apiary	                        Hämta alla bigårdar
-- GET	    /api/apiary/{id}	                Hämta specifik bigård
-- PUT	    /api/apiary/{id}	                Uppdatera bigård
-- DELETE	/api/apiary/{id}	                Radera bigård
+---
 
-### HiveController (Kupor)
-- POST	/api/hive	                        Skapa en kupa
-- GET	    /api/hive	                        Hämta alla kupor (admin)
-- GET	    /api/hive/by-apiary/{apiaryId}	    Hämta kupor i en viss bigård
-- GET	    /api/hive/by-user/{userId}	        Hämta kupor för en viss användare
-- PUT	    /api/hive/{id}	                    Uppdatera en kupa
-- DELETE	/api/hive/{id}	                    Radera en kupa
+## 🔐 Authentication
+- All endpoints (except register and login) require a valid JWT token  
+- Use header: `Authorization: Bearer {token}`  
+- Admin endpoints require admin privileges  
 
-### MitesController (Kvalsterrapporter)
-- POST	/api/mites	                        Skapa kvalsterrapport
-- GET	    /api/mites/by-hive/{hiveId}	        Hämta kvalsterrapporter för en kupa
-- GET	    /api/mites/by-apiary/{apiaryId}	    Hämta kvalsterrapporter för en bigård
-- PUT	    /api/mites/{id}	                    Uppdatera kvalsterrapport
-- DELETE	/api/mites/{id}	                    Radera kvalsterrapport
+---
 
-### WinteringController (Invintringsrapporter)
-- POST	/api/wintering	                    Skapa invintringsrapport
-- GET	    /api/wintering/by-user/{userId}	    Hämta invintringsrapporter för en användare
-- PUT	    /api/wintering/{id}	                Uppdatera invintringsrapport
-- DELETE	/api/wintering/{id}	                Radera invintringsrapport
+## 📂 API Controllers & Endpoints (selection)
 
-### HoneyHarvestController (Honungsskörd)
-- POST	/api/honeyharvest	                Skapa skörderapport
-- GET	    /api/honeyharvest/by-user/{userId}	Hämta skörderapporter för en användare
-- PUT	    /api/honeyharvest/{id}	            Uppdatera skörderapport
-- DELETE	/api/honeyharvest/{id}	            Radera skörderapport
+### AuthController (Registration & Login)
+- `POST /api/auth/register` – Register a new user  
+- `POST /api/auth/login` – Log in and receive a JWT token  
 
-##Kom igång
-Klona projektet:
+### AdminController (Admin only)
+- `GET /api/admin/users` – Get all users  
+- `GET /api/admin/pending` – Get users pending approval  
+- `PUT /api/admin/approve/{userId}` – Approve a user  
+- `PUT /api/admin/make-admin/{userId}` – Promote a user to admin  
+- `DELETE /api/admin/delete/{userId}` – Delete a user  
+
+### ApiaryController (Apiaries)
+- `POST /api/apiary` – Create a new apiary  
+- `GET /api/apiary` – Get all apiaries  
+- `GET /api/apiary/{id}` – Get a specific apiary  
+- `PUT /api/apiary/{id}` – Update an apiary  
+- `DELETE /api/apiary/{id}` – Delete an apiary  
+
+### HiveController (Hives)
+- `POST /api/hive` – Create a new hive  
+- `GET /api/hive/by-apiary/{apiaryId}` – Get hives in a specific apiary  
+- `GET /api/hive/by-user/{userId}` – Get hives for a specific user  
+- `PUT /api/hive/{id}` – Update a hive  
+- `DELETE /api/hive/{id}` – Delete a hive  
+
+### MitesController (Mite Reports)
+- `POST /api/mites` – Create a mite report  
+- `GET /api/mites/by-hive/{hiveId}` – Get mite reports for a hive  
+- `GET /api/mites/by-apiary/{apiaryId}` – Get mite reports for an apiary  
+- `PUT /api/mites/{id}` – Update a mite report  
+- `DELETE /api/mites/{id}` – Delete a mite report  
+
+### WinteringController (Wintering Reports)
+- `POST /api/wintering` – Create a wintering report  
+- `GET /api/wintering/by-user/{userId}` – Get wintering reports for a user  
+- `PUT /api/wintering/{id}` – Update a wintering report  
+- `DELETE /api/wintering/{id}` – Delete a wintering report  
+
+### HoneyHarvestController (Honey Harvests)
+- `POST /api/honeyharvest` – Create a honey harvest report  
+- `GET /api/honeyharvest/by-user/{userId}` – Get honey harvests for a user  
+- `PUT /api/honeyharvest/{id}` – Update a honey harvest report  
+- `DELETE /api/honeyharvest/{id}` – Delete a honey harvest report  
+
+---
+
+## 🚀 Getting Started
+Clone the project:  
 ```bash
 git clone https://github.com/Anne-Lii/visingsobiodlarna_api.git
-```
