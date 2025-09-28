@@ -19,11 +19,11 @@ Vissa endpoints kräver även att användaren är admin.
 -POST	/api/auth/login	                    Logga in och få JWT-token
 
 ### AdminController (Admin-behörighet krävs)
--GET     /api/admin/users	                Hämta alla användare
--GET	    /api/admin/pending	                Hämta användare som väntar på godkännande
--PUT	    /api/admin/approve/{userId}	        Godkänn en användare
--PUT	    /api/admin/make-admin/{userId}	    Uppgradera användare till admin
--DELETE	/api/admin/delete/{userId}	        Radera en användare
+- GET     /api/admin/users	                Hämta alla användare
+- GET	    /api/admin/pending	                Hämta användare som väntar på godkännande
+- PUT	    /api/admin/approve/{userId}	        Godkänn en användare
+- PUT	    /api/admin/make-admin/{userId}	    Uppgradera användare till admin
+- DELETE	/api/admin/delete/{userId}	        Radera en användare
 
 ### ApiaryController (Bigårdar)
 -POST	/api/apiary	                        Skapa en ny bigård
