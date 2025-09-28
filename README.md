@@ -4,7 +4,7 @@ Developed as part of my final degree project in Web Development (Mid Sweden Univ
 
 ---
 
-## 🌟 About
+## About
 This project provides the backend for a digital platform supporting beekeepers on the island of Visingsö.  
 The system allows members to register and manage:  
 
@@ -30,14 +30,14 @@ The application uses **role-based authentication**. Regular members can manage t
 
 ---
 
-## 🔐 Authentication
+## Authentication
 - All endpoints (except register and login) require a valid JWT token  
 - Use header: `Authorization: Bearer {token}`  
 - Admin endpoints require admin privileges  
 
 ---
 
-## 📂 API Controllers & Endpoints (selection)
+## API Controllers & Endpoints (selection)
 
 ### AuthController (Registration & Login)
 - `POST /api/auth/register` – Register a new user  
@@ -85,7 +85,7 @@ The application uses **role-based authentication**. Regular members can manage t
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 Clone the project:  
 ```bash
 git clone https://github.com/Anne-Lii/visingsobiodlarna_api.git
