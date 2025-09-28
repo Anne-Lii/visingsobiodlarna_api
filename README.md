@@ -5,11 +5,12 @@ Visingsöbiodlarna är ett examensarbete där syftet är att skapa en digital pl
 Alla endpoints (förutom register och login) kräver inloggning med JWT-token (Authorization: Bearer {token}).
 Vissa endpoints kräver även att användaren är admin.
 
-## Tekniker som används
+## Teknikstack
 * Backend: ASP.NET Core Web API med Entity Framework Core
-* Frontend: React
+* Frontend: React (TypeScript) 
 * Databas: SQL Server
-* Hosting: Azure
+* Hosting: Azure App Service + Azure SQL + Azure Blob Storage
+* Auth: JWT-token, rollbaserad åtkomst 
 
 ## Controllers och endpoints
 
