@@ -21,7 +21,8 @@ builder.Services.AddCors(options =>
             "http://localhost:3000",
             "https://localhost:3000",
             "https://visingsobiodlarna.netlify.app",
-            "https://visingsobiodlarna-api.azurewebsites.net"
+            "https://visingsobiodlarna-api.azurewebsites.net",
+            "https://brave-ground-01e23d603.3.azurestaticapps.net"
             ) //Tillåt begärningar från localhost:3000, backend på azure samt frontend på netlify
 
               .AllowAnyHeader() //Tillåt alla headers
