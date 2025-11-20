@@ -125,7 +125,8 @@ public class AuthController : ControllerBase
             SameSite = SameSiteMode.None,                   //cross-site
             Expires = DateTime.UtcNow.AddHours(12),
             Domain = "visingsobiodlarna-api.azurewebsites.net",
-            Path = "/"
+            Path = "/",
+            IsEssential = true
         };
 
         Response.Cookies.Append("jwt", tokenString, cookieOptions);
