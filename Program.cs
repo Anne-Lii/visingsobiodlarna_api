@@ -19,11 +19,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
             "http://localhost:3000",
-            "https://localhost:3000",
-            "https://visingsobiodlarna.netlify.app",
-            "https://visingsobiodlarna-api.azurewebsites.net",
-            "https://brave-ground-01e23d603.3.azurestaticapps.net"
-            ) //Tillåt begärningar från localhost:3000, backend på azure samt frontend på netlify
+            "https://localhost:3000"
+            ) //Tillåt begärningar från localhost:3000
 
               .AllowAnyHeader() //Tillåt alla headers
               .AllowAnyMethod()//Tillåt alla HTTP-metoder (GET, POST, PUT, DELETE, etc.)
@@ -140,11 +137,21 @@ builder.Services.PostConfigure<AzureBlobStorageSettings>(settings =>
 
 builder.Services.AddScoped<IBlobService, BlobService>();
 
+
+
+
+
 var app = builder.Build();
 
+//Lokal funktion för att seeda roller, tar app som parameter
+static async Task SeedRolesAsync(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+    var services = scope.ServiceProvider;
+    await RoleInitializer.SeedRolesAsync(services);
+}
 
-
-//Configure the HTTP request pipeline.
+//Swagger bara i dev
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -154,29 +161,34 @@ if (app.Environment.IsDevelopment())
 //app.UseHttpsRedirection();
 app.UseRouting();
 
-app.UseCors("AllowLocalhost");//Aktiverar CORS för localhost
+//CORS
+app.UseCors("AllowLocalhost");
 
-app.UseAuthentication();////kollar om användaren är inloggad och har JWT
-app.UseAuthorization();//kollar om användaren har rätt roll/rättigheter
+app.UseAuthentication();
+app.UseAuthorization();
+
+//Serving static React build
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+//API routes
 app.MapControllers();
 
-async Task SeedRolesAsync()
-{
-    using var scope = app.Services.CreateScope();
-    var services = scope.ServiceProvider;
-    await RoleInitializer.SeedRolesAsync(services);
-}
-
+//Test endpoint
 app.MapGet("/api/test", () => "API fungerar!");
 
-// Anropa metoden innan app.Run()
-await SeedRolesAsync();
+//Seed roles BEFORE fallback, AFTER services
+await SeedRolesAsync(app);
 
-
+//Log incoming requests
 app.Use(async (context, next) =>
 {
     Console.WriteLine($"Request: {context.Request.Method} {context.Request.Path}");
     await next();
 });
 
+//React fallback for client-side routing
+app.MapFallbackToFile("index.html");
+
+//Run app
 app.Run();
