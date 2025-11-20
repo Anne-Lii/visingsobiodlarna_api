@@ -114,15 +114,27 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-
 //BlobStorage för dokument
 builder.Services.Configure<AzureBlobStorageSettings>(
-    builder.Configuration.GetSection("AzureBlobStorage"));
+    builder.Configuration.GetSection("BlobStorage"));
+
+//Hämta blob storage connection string från miljövariabeln
+var blobConnection = builder.Configuration["BlobStorage:ConnectionString"];
+if (string.IsNullOrEmpty(blobConnection))
+{
+    throw new Exception("Blob storage connection string saknas i miljövariabeln 'BlobStorage__ConnectionString'.");
+}
+
+// Override appsettings så BlobService får rätt string
+builder.Services.PostConfigure<AzureBlobStorageSettings>(settings =>
+{
+    settings.ConnectionString = blobConnection;
+});
 
 builder.Services.AddScoped<IBlobService, BlobService>();
 
-
 var app = builder.Build();
+
 
 
 //Configure the HTTP request pipeline.
@@ -132,7 +144,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseCors("AllowLocalhost");//Aktiverar CORS för localhost
