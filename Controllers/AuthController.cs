@@ -126,6 +126,7 @@ public class AuthController : ControllerBase
             Expires = DateTime.UtcNow.AddHours(12),
             Path = "/",
             IsEssential = true,
+            Domain = "visingsobiodlarna-api.azurewebsites.net"
         
         };
 
