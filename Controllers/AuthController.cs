@@ -121,9 +121,11 @@ public class AuthController : ControllerBase
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            Secure = !isDev, //bara true i produktion
-            SameSite = isDev ? SameSiteMode.Lax : SameSiteMode.None,
-            Expires = DateTime.UtcNow.AddHours(12)
+            Secure = true,                                  //SameSite=None
+            SameSite = SameSiteMode.None,                   //cross-site
+            Expires = DateTime.UtcNow.AddHours(12),
+            Domain = "visingsobiodlarna-api.azurewebsites.net",
+            Path = "/"
         };
 
         Response.Cookies.Append("jwt", tokenString, cookieOptions);
