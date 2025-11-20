@@ -17,7 +17,13 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost", policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "https://localhost:3000") //Tillåt begärningar från localhost:3000
+        policy.WithOrigins(
+            "http://localhost:3000",
+            "https://localhost:3000",
+            "https://visingsobiodlarna.netlify.app",
+            "https://visingsobiodlarna-api.azurewebsites.net"
+            ) //Tillåt begärningar från localhost:3000, backend på azure samt frontend på netlify
+
               .AllowAnyHeader() //Tillåt alla headers
               .AllowAnyMethod()//Tillåt alla HTTP-metoder (GET, POST, PUT, DELETE, etc.)
               .AllowCredentials();
