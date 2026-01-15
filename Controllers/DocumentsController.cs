@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Net;
 using visingsobiodlarna_backend.Data;
 using visingsobiodlarna_backend.Models;
 using visingsobiodlarna_backend.Services;
-using Microsoft.EntityFrameworkCore;
-using System.Net;
+using visingsobiodlarna_backend.DTOs;
 
 namespace visingsobiodlarna_backend.Controllers;
 
@@ -32,17 +33,18 @@ public class DocumentsController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "admin")]
-    public async Task<IActionResult> UploadDocument([FromForm] IFormFile file, [FromForm] string title, [FromForm] string category)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UploadDocument([FromForm] AddDocumentDto dto)
     {
-        if (file == null || file.Length == 0)
+        if (dto.File == null || dto.File.Length == 0)
             return BadRequest("Ingen fil vald.");
 
-        var fileUrl = await _blobService.UploadFileAsync(file);
+        var fileUrl = await _blobService.UploadFileAsync(dto.File);
 
         var document = new DocumentModel
         {
-            Title = title,
-            Category = category,
+            Title = dto.Title,
+            Category = dto.Category,
             FileUrl = fileUrl,
             UploadDate = DateTime.UtcNow
         };
