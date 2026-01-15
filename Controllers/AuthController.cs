@@ -121,18 +121,23 @@ public class AuthController : ControllerBase
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            Secure = true,                                  //SameSite=None
-            SameSite = SameSiteMode.None,                   //cross-site
+            Secure = !isDev,                                  
+            SameSite = isDev ? SameSiteMode.Lax : SameSiteMode.None,                 
             Expires = DateTime.UtcNow.AddHours(12),
             Path = "/",
-            IsEssential = true,
-            Domain = "visingsobiodlarna-api.azurewebsites.net"
+            IsEssential = true
         
         };
 
+        //Domain bara i produktion
+        if (!isDev)
+        {
+            cookieOptions.Domain = "visingsobiodlarna-api.azurewebsites.net";
+        }
+
         Response.Cookies.Append("jwt", tokenString, cookieOptions);
 
-        return Ok(new { message = "Inloggning lyckades" });
+        return Ok(new { message = "Inloggning lyckades", token = tokenString });
     }
 
     [HttpPost("logout")]
