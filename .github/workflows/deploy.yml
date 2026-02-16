@@ -6,6 +6,10 @@ on:
       - main
   workflow_dispatch:
 
+concurrency:
+  group: visingsobiodlarna-deploy
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,7 +24,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Anne-Lii/visingsobiodlarna
+          ref: main
           path: frontend
+          token: ${{ secrets.FRONTEND_REPO_TOKEN }}
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -30,7 +36,9 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: '18.x'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Restore .NET
         run: dotnet restore
@@ -51,6 +59,7 @@ jobs:
 
       - name: Copy frontend build into wwwroot
         run: |
+          rm -rf "${{ env.DOTNET_ROOT }}/myapp/wwwroot"
           mkdir -p "${{ env.DOTNET_ROOT }}/myapp/wwwroot"
           cp -R ./frontend/build/* "${{ env.DOTNET_ROOT }}/myapp/wwwroot/"
 
@@ -72,6 +81,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: app
+          path: app
 
       - name: Azure Login
         uses: azure/login@v2
@@ -85,4 +95,5 @@ jobs:
         with:
           app-name: 'visingsobiodlarna-api'
           slot-name: 'Production'
-          package: .
+          package: app
+
