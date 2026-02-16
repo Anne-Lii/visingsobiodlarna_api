@@ -55,6 +55,8 @@ jobs:
 
       - name: Build frontend
         working-directory: ./frontend
+        env:
+          CI: "false"
         run: npm run build
 
       - name: Copy frontend build into wwwroot
@@ -96,4 +98,5 @@ jobs:
           app-name: 'visingsobiodlarna-api'
           slot-name: 'Production'
           package: app
+
 
