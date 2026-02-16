@@ -143,9 +143,36 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public IActionResult Logout()
     {
-        Response.Cookies.Delete("jwt");
+        var isDev = _env.IsDevelopment();
+
+        var options = new CookieOptions
+        {
+            Path = "/",
+            Secure = !isDev,
+            SameSite = isDev ? SameSiteMode.Lax : SameSiteMode.None
+        };
+
+        if (!isDev)
+        {
+            options.Domain = "visingsobiodlarna-api.azurewebsites.net";
+        }
+
+        Response.Cookies.Delete("jwt", options);
+
+        //Extra security: if there is a host-only cookie 
+        if (!isDev)
+        {
+            Response.Cookies.Delete("jwt", new CookieOptions
+            {
+                Path = "/",
+                Secure = true,
+                SameSite = SameSiteMode.None
+            });
+        }
+
         return Ok(new { message = "Utloggad" });
     }
+
 
     [HttpGet("validate")]
     public async Task<IActionResult> Validate()
