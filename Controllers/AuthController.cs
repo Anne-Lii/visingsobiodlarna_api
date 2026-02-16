@@ -180,7 +180,10 @@ public class AuthController : ControllerBase
         if (user == null) return Ok("Om kontot existerar skickas ett mejl med återställningslänk.");
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var resetUrl = $"https://localhost:3000/reset_password?email={Uri.EscapeDataString(user.Email)}&token={Uri.EscapeDataString(token)}";
+       
+        var frontendBaseUrl = _config["Frontend:BaseUrl"];
+
+        var resetUrl = $"{frontendBaseUrl}/reset-password?email={Uri.EscapeDataString(user.Email)}&token={Uri.EscapeDataString(token)}";
 
         //Skickar e-post
         Console.WriteLine("Återställningslänk: " + resetUrl);
