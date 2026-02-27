@@ -5,6 +5,11 @@ on:
     branches:
       - main
   workflow_dispatch:
+  inputs:
+      frontend_sha:
+        description: "Frontend commit SHA to build"
+        required: false
+        default: ""
 
 concurrency:
   group: visingsobiodlarna-deploy
@@ -24,7 +29,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Anne-Lii/visingsobiodlarna
-          ref: main
+          ref: ${{ inputs.frontend_sha != '' && inputs.frontend_sha || 'main' }}
           path: frontend
           token: ${{ secrets.FRONTEND_REPO_TOKEN }}
 
@@ -58,6 +63,33 @@ jobs:
         env:
           CI: "false"
         run: npm run build
+
+      - name: Debug: verify frontend commit + text
+        working-directory: ./frontend
+        run: |
+          echo "Frontend commit:"
+          git rev-parse HEAD
+      
+          echo "Search in source (src) for known text:"
+          grep -R -n "Svärmtelefon" ./src || true
+          grep -R -n "Thomas" ./src || true
+          grep -R -n "0732" ./src || true
+          grep -R -n "0723" ./src || true
+      
+          echo "Build output listing:"
+          ls -la ./build | head -n 50
+      
+          echo "Search in build output (index.html first):"
+          grep -n "Svärmtelefon" ./build/index.html || true
+          grep -n "Thomas" ./build/index.html || true
+          grep -n "0732" ./build/index.html || true
+          grep -n "0723" ./build/index.html || true
+      
+          echo "Search in all build files (may be minified):"
+          grep -R -n "Svärmtelefon" ./build || true
+          grep -R -n "Thomas" ./build || true
+          grep -R -n "0732" ./build || true
+          grep -R -n "0723" ./build || true
 
       - name: Copy frontend build into wwwroot
         run: |
@@ -98,5 +130,6 @@ jobs:
           app-name: 'visingsobiodlarna-api'
           slot-name: 'Production'
           package: app
+
 
 
