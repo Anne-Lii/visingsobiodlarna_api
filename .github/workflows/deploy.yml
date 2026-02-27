@@ -5,7 +5,7 @@ on:
     branches:
       - main
   workflow_dispatch:
-  inputs:
+    inputs:
       frontend_sha:
         description: "Frontend commit SHA to build"
         required: false
@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Anne-Lii/visingsobiodlarna
-          ref: ${{ inputs.frontend_sha != '' && inputs.frontend_sha || 'main' }}
+          ref: ${{ github.event.inputs.frontend_sha || 'main' }}
           path: frontend
           token: ${{ secrets.FRONTEND_REPO_TOKEN }}
 
@@ -93,9 +93,13 @@ jobs:
 
       - name: Copy frontend build into wwwroot
         run: |
+          OUTDIR="./frontend/build"
+          if [ -d "./frontend/dist" ]; then OUTDIR="./frontend/dist"; fi
+          echo "Using frontend output: $OUTDIR"
+
           rm -rf "${{ env.DOTNET_ROOT }}/myapp/wwwroot"
           mkdir -p "${{ env.DOTNET_ROOT }}/myapp/wwwroot"
-          cp -R ./frontend/build/* "${{ env.DOTNET_ROOT }}/myapp/wwwroot/"
+          cp -R "$OUTDIR"/* "${{ env.DOTNET_ROOT }}/myapp/wwwroot/"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -130,6 +134,7 @@ jobs:
           app-name: 'visingsobiodlarna-api'
           slot-name: 'Production'
           package: app
+
 
 
 
