@@ -122,12 +122,13 @@ public class AuthController : ControllerBase
             IsEssential = true
         
         };
-
+        /*
         //Domain bara i produktion
         if (!isDev)
         {
             cookieOptions.Domain = "visingsobiodlarna-api.azurewebsites.net";
         }
+        */
 
         Response.Cookies.Append("jwt", tokenString, cookieOptions);
 
@@ -146,13 +147,16 @@ public class AuthController : ControllerBase
             SameSite = isDev ? SameSiteMode.Lax : SameSiteMode.None
         };
 
+        /*
         if (!isDev)
         {
             options.Domain = "visingsobiodlarna-api.azurewebsites.net";
         }
+        */
 
         Response.Cookies.Delete("jwt", options);
 
+        /*
         //Extra security: if there is a host-only cookie 
         if (!isDev)
         {
@@ -163,6 +167,7 @@ public class AuthController : ControllerBase
                 SameSite = SameSiteMode.None
             });
         }
+        */
 
         return Ok(new { message = "Utloggad" });
     }
