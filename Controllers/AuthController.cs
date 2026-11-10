@@ -206,8 +206,7 @@ public class AuthController : ControllerBase
 
         var resetUrl = $"{frontendBaseUrl}/reset-password?email={Uri.EscapeDataString(user.Email)}&token={Uri.EscapeDataString(token)}";
 
-        //Skickar e-post
-        Console.WriteLine("Återställningslänk: " + resetUrl);
+        //Skicka mejl med återställningslänk
 
         return Ok("Om kontot existerar skickas ett mejl med återställningslänk.");
     }

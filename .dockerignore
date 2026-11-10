@@ -1,0 +1,20 @@
+# Kompilerade filer
+**/bin/
+**/obj/
+
+# Git och utvecklingsmiljö
+**/.git/
+**/.vs/
+**/.vscode/
+**/node_modules/
+
+# Hemliga inställningar
+**/.env
+**/.env.*
+**/appsettings*.json
+**/secrets.json
+
+# Lokala filer
+**/launchSettings.json
+**/*.user
+publish.zip
