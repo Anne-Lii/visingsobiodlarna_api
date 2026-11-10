@@ -17,6 +17,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 
 COPY --from=build /app/publish .
+COPY --from=frontend / /app/wwwroot/
 
 EXPOSE 8080
 
