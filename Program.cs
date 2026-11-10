@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using visingsobiodlarna_backend.Services;
 using System.Security.Claims;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
@@ -162,6 +163,17 @@ var blobConnection = builder.Configuration["BlobStorage:ConnectionString"];
 if (string.IsNullOrEmpty(blobConnection))
 {
     throw new Exception("Blob storage connection string saknas i miljövariabeln 'BlobStorage__ConnectionString'.");
+}
+
+// Spara säkerhetsnycklar i Azure Blob Storage i produktion
+if (!builder.Environment.IsDevelopment())
+{
+    builder.Services.AddDataProtection()
+        .SetApplicationName("Visingsobiodlarna")
+        .PersistKeysToAzureBlobStorage(
+            blobConnection,
+            "dataprotection-keys",
+            "keys.xml");
 }
 
 // Override appsettings så BlobService får rätt string
